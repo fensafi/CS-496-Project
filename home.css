@@ -1,0 +1,36 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+header {
+    background-color: #be5b5b; 
+    padding: 10px 0;
+    margin-top: 10px;
+    color: white;
+}
+header nav {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    color: white;
+}
+header nav a {
+    color: #f8f3f3; 
+    text-decoration: none;
+    font-weight: bold;
+    padding: 10px 15px;
+    border-radius: 5px;
+}
+header nav a:hover {
+    background-color: #ff9999; 
+    color: white; 
+}
+
+h1{
+    margin-left: 10px;
+}
+
+main {
+    margin-left: 10px;
+}
