@@ -1,0 +1,139 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-image: linear-gradient(rgba(81, 79, 79, 0.6), rgba(81, 79, 79, 0.6)), url('campus.jpg');
+    background-size: cover;
+}
+/* Full-width header styling */
+.navbar_default {
+    background-color: rgba(249, 4, 4, 0.714); 
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    position: fixed;
+    top: 0px;
+    left: 0;
+    z-index: 1000;
+    height: 100px;
+    box-sizing: border-box;
+    padding: 0 20px;
+}
+
+.navbar-brand {
+    color: rgb(9, 9, 9);
+    font-size: 40px;
+    font-weight: 600;
+    font-family: 'Times New Roman', Times, serif;
+    margin-left: 100px;
+}
+
+.navbar ul {
+    list-style: none;
+    display: flex;
+    gap: 80px;
+    margin: 0;
+    padding: 0;
+    margin-right: 100px;
+}
+
+.navbar a {
+    color: #0e0e0e; 
+    text-decoration: none;
+    font-size: 18px;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+.navbar a:hover {
+    color: rgba(225, 216, 216, 0.8);
+}
+
+h1{
+    margin-left: 10px;
+}
+
+main {
+    margin-left: 10px;
+}
+
+/* Footer styles */
+.footer-container {
+    background-color: rgba(249, 4, 4, 0.714); 
+    padding: 20px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;
+    flex-wrap: wrap;
+    box-sizing: border-box; 
+    position: relative; 
+    margin-top: 706px; 
+}
+
+
+.footer-left {
+    text-align: left;
+    color: rgb(3, 3, 3);
+}
+
+.footer-left p {
+    margin: 5px 0;
+    font-size: 16px;
+    opacity: 0.8;
+    font-family: 'Times New Roman', Times, serif;
+    margin-left: 100px;
+}
+
+.footer-right {
+    display: flex;
+    gap: 100px;
+    margin-right: 150px;
+}
+
+.social-icon {
+    padding: 10px;
+    background-color: white;
+    border-radius: 50%;
+    text-decoration: none;
+    color: black;
+    font-size: 20px;
+}
+
+.social-icon:hover {
+    background-color: rgb(173, 172, 174);
+    transition: 0.2s;
+    color: black;
+}
+
+/* Media queries for responsiveness */
+@media (max-width: 768px) {
+    .navbar_default {
+        flex-direction: column;
+        align-items: flex-start;
+        height: auto;
+        padding: 10px;
+    }
+
+    .navbar ul {
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .footer-container {
+        flex-direction: column;
+        text-align: center;
+        height: auto;
+        padding: 10px;
+    }
+
+    .footer-left, .footer-right {
+        margin: 0;
+    }
+
+    .footer-right {
+        gap: 10px;
+        margin-top: 10px;
+    }
+}
