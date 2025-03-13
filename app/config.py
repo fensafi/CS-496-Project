@@ -3,9 +3,6 @@ import os
 
 load_dotenv()
 
-# Load environment variables from .env file
-load_dotenv()
-
 class Config:
     
     SQLALCHEMY_DATABASE_URI = (

@@ -26,21 +26,5 @@ def create_app():
 
     return app
 
-'''db = SQLAlchemy()
-
-def create_app():
-    app = Flask(__name__, template_folder='templates')
-    app.config.from_object(Config)
-    db.init_app(app)
-
-    with app.app_context():
-        from . import models  # Ensure models are imported to create tables
-        db.create_all()
-
-        # Import and register routes
-        from .routes import init_routes
-        init_routes(app)
-
-    return app'''
 
 
