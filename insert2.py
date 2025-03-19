@@ -1,24 +1,28 @@
 from app import create_app, db
-from app.models import Advisor  # Import Advisor model
+from app.models import Advisor  # Assuming the Advisor model exists
 from werkzeug.security import generate_password_hash
+import random
 
 # Create Flask app instance
 app = create_app()
 
 # Use the application context
 with app.app_context():
-    # Create a new Advisor instance
-    advisor = Advisor(
-        name="Test Advisor",
-        email="test2@example.com",
-        office="Room 101"  # Make sure to provide a value for the office field
-    )
-    
-    # Hash the password and assign it to the advisor
-    advisor.password = generate_password_hash("password1234")
+    # Generate a random 9-digit advisor ID starting with 801
+    advisor_id = "801" + str(random.randint(100000, 999999))
 
-    # Add advisor to the database
+    # Create new advisor
+    advisor = Advisor(
+        first_name="Test",
+        last_name="Advisor",
+        advisor_id=advisor_id,  # Assuming advisor_id is stored as a string
+        email="advisor@example.com",
+        password=generate_password_hash("password123"),
+        office="Office 123"  
+    )
+
+    # Add advisor to database
     db.session.add(advisor)
     db.session.commit()
 
-    print("Advisor inserted successfully!")
+    print(f"Advisor inserted successfully! Advisor ID: {advisor_id}")

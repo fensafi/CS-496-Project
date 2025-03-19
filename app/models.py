@@ -4,8 +4,10 @@ from flask_login import UserMixin
 
 class Student(UserMixin, db.Model):
     __tablename__ = 'students'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
+    id = db.Column(db.Integer, primary_key=True)  # Internal DB ID
+    student_id = db.Column(db.BigInteger, unique=True, nullable=False)  # 9-digit numeric ID
+    first_name = db.Column(db.String(50), nullable=False)
+    last_name = db.Column(db.String(50), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(256), nullable=False)
 
@@ -20,8 +22,10 @@ class Student(UserMixin, db.Model):
 
 class Advisor(UserMixin, db.Model):
     __tablename__ = 'advisors'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
+    id = db.Column(db.Integer, primary_key=True)  # Internal DB ID
+    advisor_id = db.Column(db.BigInteger, unique=True, nullable=False)  # Advisor ID
+    first_name = db.Column(db.String(50), nullable=False)
+    last_name = db.Column(db.String(50), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(256), nullable=False)
     office = db.Column(db.String(100), nullable=False)
@@ -55,12 +59,11 @@ class Appointment(db.Model):
     __tablename__ = 'appointments'
     
     id = db.Column(db.Integer, primary_key=True)
-    student_id = db.Column(db.Integer, db.ForeignKey('students.id'), nullable=False)
-    advisor_id = db.Column(db.Integer, db.ForeignKey('advisors.id'), nullable=False)
+    student_id = db.Column(db.BigInteger, db.ForeignKey('students.student_id'), nullable=False)
+    advisor_id = db.Column(db.BigInteger, db.ForeignKey('advisors.advisor_id'), nullable=False)
     datetime = db.Column(db.DateTime, nullable=False)
     
-    student = db.relationship('Student', backref='appointments', lazy=True)
-    advisor = db.relationship('Advisor', backref='appointments', lazy=True)
-    
-    def __repr__(self):
-        return f'<Appointment {self.id} - {self.datetime}>'
+    student = db.relationship('Student', backref='appointments', lazy=True, primaryjoin="Student.student_id == Appointment.student_id")
+    advisor = db.relationship('Advisor', backref='appointments', lazy=True, primaryjoin="Advisor.advisor_id == Appointment.advisor_id")
+
+

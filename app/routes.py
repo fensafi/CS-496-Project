@@ -26,21 +26,23 @@ def init_routes(app):
             email = request.form['email']
             password = request.form['password']
 
-            # Check in Students table
+            # Check Students table
             user = Student.query.filter_by(email=email).first()
             if user and user.check_password(password):
                 login_user(user)
                 session['user_type'] = 'student'
+                session['user_id'] = user.student_id  # Store student ID in session
                 return redirect(url_for('student_dashboard'))
 
-            # Check in Advisors table
+            # Check Advisors table
             user = Advisor.query.filter_by(email=email).first()
             if user and user.check_password(password):
                 login_user(user)
                 session['user_type'] = 'advisor'
+                session['user_id'] = user.advisor_id  # Store advisor ID in session
                 return redirect(url_for('advisor_dashboard'))
 
-            # Check in Administration table
+            # Check Administration table (No changes)
             user = Administration.query.filter_by(email=email).first()
             if user and user.check_password(password):
                 login_user(user)
@@ -52,6 +54,7 @@ def init_routes(app):
 
         return render_template('login.html')
 
+
     @app.route('/logout')
     def logout():
         logout_user()
@@ -61,12 +64,15 @@ def init_routes(app):
     @app.route('/student_dashboard')
     def student_dashboard():
         if session.get('user_type') == 'student':
-            return render_template('student_dashboard.html')
+            student = Student.query.filter_by(student_id=session.get('user_id')).first()
+            return render_template('student_dashboard.html', student=student)
         return redirect(url_for('login'))
+
 
     @app.route('/advisor_dashboard')
     def advisor_dashboard():
         if session.get('user_type') == 'advisor':
+            advisor = Advisor.query.filter_by(advisor_id=session.get('user_id')).first()
             return render_template('advisor_dashboard.html')
         return redirect(url_for('login'))
 
