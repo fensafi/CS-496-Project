@@ -1,7 +1,7 @@
 from flask import render_template, request, redirect, url_for, flash, session
 from .models import Student, Advisor, Administration
 from . import db
-from flask_login import login_user, logout_user, LoginManager
+from flask_login import login_required, login_user, logout_user, LoginManager
 
 login_manager = LoginManager()
 
@@ -76,8 +76,63 @@ def init_routes(app):
             return render_template('advisor_dashboard.html')
         return redirect(url_for('login'))
 
-    @app.route('/admin_dashboard')
+    @app.route('/admin_dashboard', methods=['GET', 'POST'])
+    @login_required
     def admin_dashboard():
-        if session.get('user_type') == 'admin':
-            return render_template('admin_dashboard.html')
-        return redirect(url_for('login'))
+        if session.get('user_type') != 'admin':
+            return redirect(url_for('login'))
+
+        # Fetch all users
+        students = Student.query.all()
+        advisors = Advisor.query.all()
+        admins = Administration.query.all()
+
+        return render_template('admin_dashboard.html', students=students, advisors=advisors, admins=admins)
+
+    @app.route('/admin/create_user', methods=['POST'])
+    @login_required
+    def create_user():
+        if session.get('user_type') != 'admin':
+            return redirect(url_for('login'))
+
+        user_type = request.form.get('user_type')
+        first_name = request.form.get('first_name')
+        last_name = request.form.get('last_name')
+        email = request.form.get('email')
+        password = request.form.get('password')
+
+        if user_type == "student":
+            new_user = Student(student_id=int(request.form.get('student_id')), first_name=first_name, last_name=last_name, email=email)
+        elif user_type == "advisor":
+            new_user = Advisor(advisor_id=int(request.form.get('advisor_id')), first_name=first_name, last_name=last_name, email=email, office=request.form.get('office'))
+        elif user_type == "admin":
+            new_user = Administration(name=f"{first_name} {last_name}", email=email)
+
+        new_user.set_password(password)  # Hash the password
+        db.session.add(new_user)
+        db.session.commit()
+
+        flash(f'{user_type.capitalize()} {first_name} {last_name} created successfully!', 'success')
+        return redirect(url_for('admin_dashboard'))
+
+    @app.route('/admin/delete_user/<user_type>/<int:user_id>', methods=['POST'])
+    @login_required
+    def delete_user(user_type, user_id):
+        if session.get('user_type') != 'admin':
+            return redirect(url_for('login'))
+
+        if user_type == "student":
+            user = Student.query.get(user_id)
+        elif user_type == "advisor":
+            user = Advisor.query.get(user_id)
+        elif user_type == "admin":
+            user = Administration.query.get(user_id)
+
+        if user:
+            db.session.delete(user)
+            db.session.commit()
+            flash(f'{user_type.capitalize()} deleted successfully!', 'success')
+        else:
+            flash(f'User not found!', 'danger')
+
+        return redirect(url_for('admin_dashboard'))
