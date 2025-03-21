@@ -62,5 +62,13 @@ class Appointment(db.Model):
     student = db.relationship('Student', backref='appointments', lazy=True)
     advisor = db.relationship('Advisor', backref='appointments', lazy=True)
     
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "studentName": self.student,
+            "date": self.datetime,
+            "studentId": self.student_id
+        }
+
     def __repr__(self):
         return f'<Appointment {self.id} - {self.datetime}>'
