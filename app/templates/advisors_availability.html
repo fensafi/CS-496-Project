@@ -4,9 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WKU CS Division Advising Center</title>
-
-    <link rel="stylesheet" href="../static/students.css">
-
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.css" rel="stylesheet">
 
@@ -16,9 +13,8 @@
     <!-- FullCalendar CSS -->
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.css" rel="stylesheet">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='students.css') }}">
-
-    <script src="{{ url_for('static', filename='students.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='advisors_availability.css') }}">
+    <script src="{{ url_for('static', filename='advisors_availability.js') }}"></script>
 
 </head>
 <body>
@@ -33,29 +29,16 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{{ url_for('home') }}">Home</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('schedule_appointments') }}">Scheduled Appointments</a>
-                </li>
             </ul>
         </div>
     </nav>
-    
 
     <!-- Header Title -->
     <div class="title">
-        <h2>Hello, Students! Book an appointment here.</h2>
+        <h2>Hello, Advisors! Add your availability here.</h2>
     </div>
 
     <div class="container">
-        <div class="list-group" id="advisor-container">
-            <div id="advisor-title">
-                Select an Advisor
-            </div>
-            <!-- Advisors will be populated here -->
-        </div>
-        
-        <div id="calendar"></div>    
-    
         <div class="time_slots">
             <a class="advisor_time_slots" data-advisor-id="1">
                 Select Times
@@ -63,21 +46,18 @@
             <div id="time-slot-list">
                 <!-- Time slots will be populated here dynamically -->
             </div>
-            <p id="selected-date">Selected Date: </p> 
-            <input type="hidden" id="selected-time" name="selected-time">
-            <input type="hidden" id="student-email" value="{{ student_email }}">
-            <input type="hidden" id="advisor-email" name="advisor_email">
-            <input type="hidden" id="advisor-name" name="advisor_name">
-            <input type="hidden" id="advisor-office" name="advisor-office">
+            <div id="selected-date"></div>
+            
+            <div class="submit-availability-container">
+                <button id="submitAvailability" class="btn btn-primary">Submit</button>
+            </div>
         </div>
-    </div>
-
-
-    <div class="note-container">
-        <input type="text" class="student-note" placeholder="Leave a note..." />
-        <button id="submitAppointment" class="btn btn-primary">Submit</button>
-    </div>
-
+    
+        
+        <div id="advisors_calendar"></div>
+              
+    </div>    
+    
     <footer>
         <div class="footer-container">
             <div class="footer-left">
@@ -87,7 +67,10 @@
                 <p>270-745-8848</p>
             </div>
             <div class="footer-right">
-        
+                <li class="nav-item">
+                    <a class="nav-link-footer-right" href="{{ url_for('home') }}">Logout</a>
+                </li>
+                
             </div>
         </div>
     </footer>

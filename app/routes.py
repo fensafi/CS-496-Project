@@ -67,7 +67,21 @@ def init_routes(app):
             student = Student.query.filter_by(student_id=session.get('user_id')).first()
             return render_template('student_dashboard.html', student=student)
         return redirect(url_for('login'))
+    
+    @app.route('/schedule-appointments')
+    def schedule_appointments():
+        if session.get('user_type') == 'student':
+            student = Student.query.filter_by(student_id=session.get('user_id')).first()
+            return render_template('schedule-appointments.html', student=student)
+        return redirect(url_for('login'))
 
+    @app.route('/advisors_availability')
+    def advisors_availability():
+        if session.get('user_type') == 'advisor':
+            advsior = Advisor.query.filter_by(advisor_id=session.get('user_id')).first()
+            return render_template('advisors_availability.html')
+        return redirect(url_for('login'))
+    
 
     @app.route('/advisor_dashboard')
     def advisor_dashboard():
@@ -114,6 +128,7 @@ def init_routes(app):
 
         flash(f'{user_type.capitalize()} {first_name} {last_name} created successfully!', 'success')
         return redirect(url_for('admin_dashboard'))
+    
 
     @app.route('/admin/delete_user/<user_type>/<int:user_id>', methods=['POST'])
     @login_required
@@ -136,3 +151,4 @@ def init_routes(app):
             flash(f'User not found!', 'danger')
 
         return redirect(url_for('admin_dashboard'))
+    

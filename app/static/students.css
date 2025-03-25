@@ -57,83 +57,159 @@ main {
     margin-left: 10px;
 }
 
-/* Footer styles */
+.title {
+    color: rgb(9, 9, 9);
+    font-size: 40px;
+    font-weight: 200;
+    font-family: 'Times New Roman', Times, serif;
+    margin-left: 350px;
+    margin-top: 105px;
+}
+
+.container {
+    display: flex;
+    align-items: flex-start;
+    padding: 0px; 
+    margin-left: 130px;
+    
+}
+
+#advisor-container {
+    width: 250px;
+    height: 300px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto; /* Allows scrolling if advisors exceed height */
+    background-color: #ffff;
+    align-items: flex-end;
+    align-items: flex-start;
+}
+
+#advisor-container.list-group.active {
+    background-color: #ffff; 
+    color: black !important; 
+    border: none;
+    font-weight: bold; 
+    text-align: center; 
+}
+
+.advisor_name:hover {
+    background-color: #f1f1f1;
+}
+
+.advisor_name:not(:last-child) {
+    border-bottom: 1px solid #ddd; /* Adds a line between each advisor */
+}
+
+
+#calendar {
+    background-color: #ffff;
+    padding: 0px;
+    width: 700px;
+    height: 300px;
+    display: flex;
+    flex-direction: column;
+    margin-left: 30px;
+}
+
+.time_slots{
+    width: 250px;
+    height: 300px;
+    display: flex;
+    padding: 0;
+    margin-left: 40px;
+    background-color: #ffff;
+    flex-direction: column;
+    overflow-y: auto; 
+}
+
+.available-event {
+    background-color: rgba(249, 4, 4, 0.714); /* Change text color */
+    font-weight: bold; 
+    border: none;
+    
+}
+
+.note-container {
+    display: flex;
+    align-items: center; 
+    width: 100%;
+    gap: 10px; 
+    margin-top: 30px;
+}
+
+.student-note {
+    width: 600px; /* Adjust width as needed */
+    padding: 8px;
+    height: 160px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-top: 30px;
+    margin-left: 400px;
+
+}
+
+#submitAppointment {
+    padding: 8px 12px;
+    border: none;
+    background-color: rgba(249, 4, 4, 0.714);
+    color: black;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#submitAvailability:hover {
+    background-color: rgba(164, 107, 107, 0.8);
+}
+
+.highlighted {
+    background-color: rgba(249, 4, 4, 0.714) !important;
+    color: white;
+}
+
+.selected {
+    border: 2px rgba(249, 4, 4, 0.714);
+}
+
+
 .footer-container {
     background-color: rgba(249, 4, 4, 0.714); 
-    padding: 20px;
     width: 100%;
+    height: auto;
     display: flex;
     justify-content: space-between; 
     align-items: center;
-    flex-wrap: wrap;
-    box-sizing: border-box; 
-    position: relative; 
-    margin-top: 696px; 
+    position: fixed; /* Fix the footer to the bottom */
+    bottom: 0; /* Position it at the bottom of the viewport */
+    left: 0;
+    padding: 10px 20px; /* Add some padding to make it more comfortable */
+    z-index: 999; /* Ensure it's above other elements */
 }
 
-
-.footer-left {
-    text-align: left;
+.footer-left, .footer-right {
     color: rgb(3, 3, 3);
-}
-
-.footer-left p {
-    margin: 5px 0;
     font-size: 16px;
     opacity: 0.8;
     font-family: 'Times New Roman', Times, serif;
-    margin-left: 100px;
+}
+
+.footer-left p, .footer-right p {
+    margin: 5px 0;
 }
 
 .footer-right {
     display: flex;
+    justify-content: flex-end;
     gap: 100px;
     margin-right: 150px;
 }
 
-.social-icon {
-    padding: 10px;
-    background-color: white;
-    border-radius: 50%;
-    text-decoration: none;
-    color: black;
-    font-size: 20px;
+.nav-link-footer-right {
+    text-decoration: none; 
+    color: rgb(3, 3, 3);  
 }
 
-.social-icon:hover {
-    background-color: rgb(173, 172, 174);
-    transition: 0.2s;
-    color: black;
+.nav-link-footer-right:hover {
+    color: rgba(225, 216, 216, 0.8);
 }
 
-/* Media queries for responsiveness */
-@media (max-width: 768px) {
-    .navbar_default {
-        flex-direction: column;
-        align-items: flex-start;
-        height: auto;
-        padding: 10px;
-    }
-
-    .navbar ul {
-        flex-direction: column;
-        gap: 10px;
-        margin-top: 10px;
-    }
-
-    .footer-container {
-        flex-direction: column;
-        text-align: center;
-        height: auto;
-        padding: 10px;
-    }
-
-    .footer-left, .footer-right {
-        margin: 0;
-    }
-
-    .footer-right {
-        gap: 10px;
-        margin-top: 10px;
-    }
-}
