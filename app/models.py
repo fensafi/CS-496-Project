@@ -66,4 +66,13 @@ class Appointment(db.Model):
     student = db.relationship('Student', backref='appointments', lazy=True, primaryjoin="Student.student_id == Appointment.student_id")
     advisor = db.relationship('Advisor', backref='appointments', lazy=True, primaryjoin="Advisor.advisor_id == Appointment.advisor_id")
 
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "studentName": self.student,
+            "date": self.datetime,
+            "studentId": self.student_id
+        }
+
+
 
