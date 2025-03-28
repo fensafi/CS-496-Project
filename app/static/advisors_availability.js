@@ -24,21 +24,23 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     calendar.render();
 
-    // Function to generate time slots dynamically
     function generateTimeSlots(selectedDate) {
         let timeSlotList = document.getElementById("time-slot-list");
-        timeSlotList.innerHTML = ''; // Clear any previously generated time slots
-
+        timeSlotList.innerHTML = ''; // Clear previous time slots
+    
         let startHour = 8;
-        let endHour = 15; // 3:00 PM
-        let timeInterval = 30; // 30 minutes interval
-
+        let endHour = 15; // Up to 3:00 PM
+        let timeInterval = 30; // 30-minute slots
+    
         for (let hour = startHour; hour <= endHour; hour++) {
             for (let min = 0; min < 60; min += timeInterval) {
-                let hourFormatted = hour < 10 ? '0' + hour : hour;
+                let displayHour = hour > 12 ? hour - 12 : hour; // Convert 24-hour to 12-hour format
+                displayHour = displayHour === 0 ? 12 : displayHour; // Handle 12 AM case
                 let minFormatted = min === 0 ? '00' : min;
-                let timeString = `${hourFormatted}:${minFormatted} ${hour < 12 ? 'AM' : 'PM'}`;
-
+                let period = hour < 12 ? 'AM' : 'PM'; // Set AM or PM
+    
+                let timeString = `${displayHour}:${minFormatted} ${period}`; // Correct 12-hour format
+    
                 let timeSlotItem = document.createElement("div");
                 timeSlotItem.classList.add("time-slot");
                 timeSlotItem.innerHTML = `
@@ -50,22 +52,33 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     }
-
+    
     document.getElementById("submitAvailability").addEventListener("click", function() {
         let selectedDate = document.getElementById("selected-date").textContent.split(": ")[1];
         let selectedTime = document.querySelector('input[name="time"]:checked')?.value;
-        let advisorEmail = '{{ session.get("email") }}';  // Pull email from the session
-
-        // Check if a time is selected
+        let advisorEmail = document.getElementById('advisor-email').value;
+    
+        // Debugging output
+        console.log("Sending Data:", { date: selectedDate, time: selectedTime, email: advisorEmail });
+    
         if (!selectedTime) {
             alert("Please select a time.");
             return;
         }
-
-        // Send the selected date, time, and email to the server
+    
+        let datePattern = /^\d{4}-\d{2}-\d{2}$/;
+        if (!datePattern.test(selectedDate)) {
+            alert("Invalid date format.");
+            return;
+        }
+    
         fetch("/add_availability", {
             method: "POST",
-            body: JSON.stringify({ date: selectedDate, time: selectedTime, email: advisorEmail }),  // Send email from session
+            body: JSON.stringify({
+                date: selectedDate,
+                time: selectedTime,
+                email: advisorEmail
+            }),
             headers: { 
                 "Content-Type": "application/json",
                 "Accept": "application/json"
@@ -73,6 +86,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => response.json())
         .then(data => {
+            console.log("Response Data:", data); // Debugging output
             if (data.message === "Availability added successfully!") {
                 alert("Availability Added!");
             } else {
@@ -84,5 +98,4 @@ document.addEventListener('DOMContentLoaded', function() {
             alert("Error occurred while adding availability.");
         });
     });
-
-});
+});    
