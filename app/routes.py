@@ -1,7 +1,12 @@
 from flask import render_template, request, redirect, url_for, flash, session
 from .models import Student, Advisor, Administration
 from . import db
+from .models import Availability
 from flask_login import login_required, login_user, logout_user, LoginManager
+from flask import Flask, request, jsonify  # Ensure jsonify is imported
+import re
+from datetime import datetime
+from flask import session
 
 login_manager = LoginManager()
 
@@ -151,4 +156,59 @@ def init_routes(app):
             flash(f'User not found!', 'danger')
 
         return redirect(url_for('admin_dashboard'))
+    
+    @app.route("/add_availability", methods=["POST"])
+    def add_availability():
+        try:
+            data = request.get_json()
+            print("Received data:", data)  # Debugging output
+
+            selected_date = data.get("date")
+            selected_time = data.get("time")
+            advisor_email = data.get("email")  # Get the email from the session
+
+            # Debugging prints
+            print(f"Extracted values - Date: {selected_date}, Time: {selected_time}, Advisor Email: {advisor_email}")
+
+            # Ensure required fields are present
+            if not selected_date:
+                print("Error: Missing selected_date")
+                return jsonify({"message": "Missing date"}), 400
+            if not selected_time:
+                print("Error: Missing selected_time")
+                return jsonify({"message": "Missing time"}), 400
+            if not advisor_email:
+                print("Error: Missing advisor_email")
+                return jsonify({"message": "Missing advisor email"}), 400
+
+            # Validate and format datetime
+            try:
+                selected_datetime = datetime.strptime(f"{selected_date} {selected_time}", "%Y-%m-%d %I:%M %p")
+            except ValueError as e:
+                print(f"Datetime Parsing Error: {str(e)}")
+                return jsonify({"message": f"Invalid datetime format: {str(e)}"}), 400
+
+            # Create availability record (only storing email and datetime)
+            availability = Availability(
+                advisor_email=advisor_email,
+                datetime=selected_datetime  # ✅ Use datetime instead of separate date/time fields
+            )
+
+            # Save to database
+            db.session.add(availability)
+            db.session.commit()
+
+            print(f"Saved availability: {selected_datetime}")  # Debugging output
+
+            return jsonify({"message": "Availability added successfully!"}), 200
+
+        except Exception as e:
+            db.session.rollback()  # Rollback transaction on error
+            print(f"Error: {str(e)}")
+            return jsonify({"message": "Error while adding availability."}), 500
+
+
+
+
+
     

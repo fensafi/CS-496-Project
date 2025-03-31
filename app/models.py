@@ -74,13 +74,12 @@ class Appointment(db.Model):
             "studentId": self.student_id
         }
 
-
-
 class Availability(db.Model):
     __tablename__ = 'availabilities'
     
     id = db.Column(db.Integer, primary_key=True)
-    advisor_id = db.Column(db.Integer, db.ForeignKey('advisors.id'), nullable=False)  # ForeignKey to Advisor table
+    advisor_email = db.Column(db.String(120), db.ForeignKey('advisors.email'), nullable=False)  # ForeignKey to Advisor's email
     datetime = db.Column(db.DateTime, nullable=False)
     
     advisor = db.relationship('Advisor', backref='availabilities', lazy=True)
+
