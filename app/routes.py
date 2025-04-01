@@ -20,6 +20,8 @@ def init_routes(app):
         user = Student.query.get(user_id) or Advisor.query.get(user_id) or Administration.query.get(user_id)
         return user
 
+
+    ''' Home & Login'''
     @app.route('/')
     @app.route('/home')
     def home():
@@ -59,13 +61,14 @@ def init_routes(app):
 
         return render_template('login.html')
 
-
     @app.route('/logout')
     def logout():
         logout_user()
         session.pop('user_type', None)
         return redirect(url_for('home'))
 
+
+    ''' Student Dashboard'''
     @app.route('/student_dashboard')
     def student_dashboard():
         if session.get('user_type') == 'student':
@@ -88,6 +91,7 @@ def init_routes(app):
         return redirect(url_for('login'))
     
 
+    ''' Advisor Dashboard'''
     @app.route('/advisor_dashboard')
     def advisor_dashboard():
         if session.get('user_type') == 'advisor':
@@ -95,68 +99,6 @@ def init_routes(app):
             return render_template('advisor_dashboard.html')
         return redirect(url_for('login'))
 
-    @app.route('/admin_dashboard', methods=['GET', 'POST'])
-    @login_required
-    def admin_dashboard():
-        if session.get('user_type') != 'admin':
-            return redirect(url_for('login'))
-
-        # Fetch all users
-        students = Student.query.all()
-        advisors = Advisor.query.all()
-        admins = Administration.query.all()
-
-        return render_template('admin_dashboard.html', students=students, advisors=advisors, admins=admins)
-
-    @app.route('/admin/create_user', methods=['POST'])
-    @login_required
-    def create_user():
-        if session.get('user_type') != 'admin':
-            return redirect(url_for('login'))
-
-        user_type = request.form.get('user_type')
-        first_name = request.form.get('first_name')
-        last_name = request.form.get('last_name')
-        email = request.form.get('email')
-        password = request.form.get('password')
-
-        if user_type == "student":
-            new_user = Student(student_id=int(request.form.get('student_id')), first_name=first_name, last_name=last_name, email=email)
-        elif user_type == "advisor":
-            new_user = Advisor(advisor_id=int(request.form.get('advisor_id')), first_name=first_name, last_name=last_name, email=email, office=request.form.get('office'))
-        elif user_type == "admin":
-            new_user = Administration(name=f"{first_name} {last_name}", email=email)
-
-        new_user.set_password(password)  # Hash the password
-        db.session.add(new_user)
-        db.session.commit()
-
-        flash(f'{user_type.capitalize()} {first_name} {last_name} created successfully!', 'success')
-        return redirect(url_for('admin_dashboard'))
-    
-
-    @app.route('/admin/delete_user/<user_type>/<int:user_id>', methods=['POST'])
-    @login_required
-    def delete_user(user_type, user_id):
-        if session.get('user_type') != 'admin':
-            return redirect(url_for('login'))
-
-        if user_type == "student":
-            user = Student.query.get(user_id)
-        elif user_type == "advisor":
-            user = Advisor.query.get(user_id)
-        elif user_type == "admin":
-            user = Administration.query.get(user_id)
-
-        if user:
-            db.session.delete(user)
-            db.session.commit()
-            flash(f'{user_type.capitalize()} deleted successfully!', 'success')
-        else:
-            flash(f'User not found!', 'danger')
-
-        return redirect(url_for('admin_dashboard'))
-    
     @app.route("/add_availability", methods=["POST"])
     def add_availability():
         try:
@@ -206,6 +148,125 @@ def init_routes(app):
             db.session.rollback()  # Rollback transaction on error
             print(f"Error: {str(e)}")
             return jsonify({"message": "Error while adding availability."}), 500
+
+
+    ''' Admin Dashboard'''
+    @app.route('/admin_dashboard', methods=['GET', 'POST'])
+    @login_required
+    def admin_dashboard():
+        if session.get('user_type') != 'admin':
+            return redirect(url_for('login'))
+
+        # Fetch all users
+        students = Student.query.all()
+        advisors = Advisor.query.all()
+        admins = Administration.query.all()
+
+        return render_template('admin_dashboard.html', students=students, advisors=advisors, admins=admins)
+    
+    # Create User 
+    @app.route('/admin/create_user', methods=['POST'])
+    @login_required
+    def create_user():
+        if session.get('user_type') != 'admin':
+            return redirect(url_for('login'))
+
+        user_type = request.form.get('user_type')
+        first_name = request.form.get('first_name')
+        last_name = request.form.get('last_name')
+        email = request.form.get('email')
+        password = request.form.get('password')
+
+        if user_type == "student":
+            new_user = Student(student_id=int(request.form.get('student_id')), first_name=first_name, last_name=last_name, email=email)
+        elif user_type == "advisor":
+            new_user = Advisor(advisor_id=int(request.form.get('advisor_id')), first_name=first_name, last_name=last_name, email=email, office=request.form.get('office'))
+        elif user_type == "admin":
+            new_user = Administration(name=f"{first_name} {last_name}", email=email)
+
+        new_user.set_password(password)  # Hash the password
+        db.session.add(new_user)
+        db.session.commit()
+
+        flash(f'{user_type.capitalize()} {first_name} {last_name} created successfully!', 'success')
+        return redirect(url_for('admin_dashboard'))
+    
+    # Delete User
+    @app.route('/admin/delete_user/<user_type>/<int:user_id>', methods=['POST'])
+    @login_required
+    def delete_user(user_type, user_id):
+        print(f"DEBUG: Entering delete_user route with user_type: {user_type}, user_id: {user_id}")
+
+        # Check if the current user is an admin
+        if session.get('user_type') != 'admin':
+            print("DEBUG: User is not an admin, redirecting to login.")
+            return redirect(url_for('login'))
+
+        # Dynamically select the appropriate table and column based on user_type
+        if user_type == "student":
+            print("DEBUG: Attempting to delete a student.")
+            user = Student.query.filter_by(student_id=user_id).first()
+        elif user_type == "advisor":
+            print("DEBUG: Attempting to delete an advisor.")
+            user = Advisor.query.filter_by(advisor_id=user_id).first()
+        elif user_type == "admin":
+            print("DEBUG: Attempting to delete an admin.")
+            user = Administration.query.filter_by(id=user_id).first()
+        else:
+            print(f"DEBUG: Invalid user_type received: {user_type}")
+            flash('Invalid user type!', 'danger')
+            return redirect(url_for('admin_dashboard'))
+
+        # Check if the user was found
+        if user:
+            print(f"DEBUG: User found: {user}")
+            try:
+                db.session.delete(user)
+                db.session.commit()
+                print(f"DEBUG: {user_type.capitalize()} with ID {user_id} deleted successfully.")
+                flash(f'{user_type.capitalize()} deleted successfully!', 'success')
+            except Exception as e:
+                db.session.rollback()
+                print(f"DEBUG: Error while deleting user: {e}")
+                flash(f'Error deleting {user_type}: {str(e)}', 'danger')
+        else:
+            print(f"DEBUG: No {user_type} found with ID {user_id}.")
+            flash(f'{user_type.capitalize()} not found!', 'danger')
+
+        return redirect(url_for('admin_dashboard'))
+
+    # Search User
+    @app.route('/admin/search_users', methods=['GET'])
+    @login_required
+    def search_users():
+        if session.get('user_type') != 'admin':
+            return redirect(url_for('login'))
+
+        query = request.args.get('query', '').strip()
+
+        if not query:
+            flash("Please enter a search term.", "warning")
+            return redirect(url_for('admin_dashboard'))
+
+        # Try to determine if input is an ID (numeric) or name (text)
+        if query.isdigit():  # Search by numeric ID
+            students = Student.query.filter_by(student_id=int(query)).all()
+            advisors = Advisor.query.filter_by(advisor_id=int(query)).all()
+            admins = Administration.query.filter_by(id=int(query)).all()
+        else:  # Search by name
+            students = Student.query.filter(
+                (Student.first_name.ilike(f"%{query}%")) | (Student.last_name.ilike(f"%{query}%"))
+            ).all()
+
+            advisors = Advisor.query.filter(
+                (Advisor.first_name.ilike(f"%{query}%")) | (Advisor.last_name.ilike(f"%{query}%"))
+            ).all()
+
+            admins = Administration.query.filter(
+                Administration.name.ilike(f"%{query}%")
+            ).all()
+
+        return render_template('admin_dashboard.html', students=students, advisors=advisors, admins=admins, query=query)
 
 
 

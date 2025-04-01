@@ -5,18 +5,104 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
     <link rel="stylesheet" href="../static/admins.css">
+
+    <!-- Connects js/admin.js file so functions ( like toggleMenu() ) in there will work when called in this file-->
+    <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
 </head>
 <body>
 
-    <div class="logout-container">
-        <a href="{{ url_for('logout') }}" class="logout-button">Logout</a>
+    <!-- Holds menu icon in top right and side bar menu -->
+    <div class="menu-container" id="menu-btn">
+        <button class="menu-button" onclick="toggleMenu()">
+            <svg class="menu-icon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M5 7h14M5 12h14M5 17h14"/>
+            </svg>
+        </button>
+        <div class="side-menu" id="sideMenu">
+            <a>View Account</a>
+            <a>Change Password</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
     </div>
+
+
     
     <div class="container">
         <h1>Admin Dashboard</h1>
+
+        <!-- Create User Form -->
+        <div class="form-section" id="createUserSection">
+            <div class="header" onclick="toggleForm()">
+                <h2>Create User</h2>
+                <div class="plus-sign">
+                    <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 20 20">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-7 7V5"/>
+                    </svg>
+                </div>
+            </div>
+            
+            <div class="form-content">
+                <form method="POST" action="{{ url_for('create_user') }}">
+                    <label for="user_type">User Type:</label>
+                    <select name="user_type" id="user_type" required onchange="showFields()">
+                        <option value="" disabled selected>Select User Type</option>
+                        <option value="student">Student</option>
+                        <option value="advisor">Advisor</option>
+                        <option value="admin">Admin</option>
+                    </select><br><br>
+
+                    <div id="studentFields" class="dynamicFields" style="display: none;">
+                        <label>Student ID:</label>
+                        <input type="number" name="student_id"><br>
+                    </div>
+
+                    <div id="advisorFields" class="dynamicFields" style="display: none;">
+                        <label>Advisor ID:</label>
+                        <input type="number" name="advisor_id"><br>
+
+                        <label>Office:</label>
+                        <input type="text" name="office"><br>
+                    </div>
+
+                    <div id="adminFields" class="dynamicFields" style="display: none;">
+                        <!-- Admin specific fields can go here -->
+                    </div>
+
+                    <label>First Name:</label>
+                    <input type="text" name="first_name" required><br>
+
+                    <label>Last Name:</label>
+                    <input type="text" name="last_name" required><br>
+
+                    <label>Email:</label>
+                    <input type="email" name="email" required><br>
+
+                    <label>Password:</label>
+                    <input type="password" name="password" required><br>
+
+                    <button type="submit">Create User</button>
+                </form>
+            </div>
+        </div>
+
         
-        <!-- Users List -->
-        <h2>All Users</h2>
+        <!-- Displays users and search form. MAYBE ADD BACK BUTTON OR SOMETHING? -->
+        <div class= "search-header">
+            <!-- Users List -->
+            <h2>Users</h2>
+
+            <!-- Search Form -->
+            <form action="{{ url_for('search_users') }}" method="get">
+                <input type="text" name="query" placeholder="Search by Name or ID" required>
+                <button type="submit">Search</button>
+            </form>
+
+        </div>
+
+        {% if query %}
+            <h3>Search Results for "{{ query }}"</h3>
+        {% endif %}
+
         <h3>Students</h3>
         <table>
             <tr><th>ID</th><th>Name</th><th>Email</th><th>Action</th></tr>
@@ -68,43 +154,6 @@
             {% endfor %}
         </table>
 
-        <!-- Create User Form -->
-        <div class="form-section">
-            <h2>Create New User</h2>
-            <form method="POST" action="{{ url_for('create_user') }}">
-                <label for="user_type">User Type:</label>
-                <select name="user_type" required>
-                    <option value="student">Student</option>
-                    <option value="advisor">Advisor</option>
-                    <option value="admin">Admin</option>
-                </select><br><br>
-
-                <label>First Name:</label>
-                <input type="text" name="first_name" required><br>
-
-                <label>Last Name:</label>
-                <input type="text" name="last_name" required><br>
-
-                <label>Email:</label>
-                <input type="email" name="email" required><br>
-
-                <label>Password:</label>
-                <input type="password" name="password" required><br>
-
-                <div id="extraFields">
-                    <label>Student ID (if student):</label>
-                    <input type="number" name="student_id"><br>
-
-                    <label>Advisor ID (if advisor):</label>
-                    <input type="number" name="advisor_id"><br>
-
-                    <label>Office (if advisor):</label>
-                    <input type="text" name="office"><br>
-                </div>
-
-                <button type="submit">Create User</button>
-            </form>
-        </div>
     </div>
 </body>
 </html>
