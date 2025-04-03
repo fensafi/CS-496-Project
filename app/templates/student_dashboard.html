@@ -54,7 +54,9 @@
             <!-- Advisors will be populated here -->
         </div>
         
-        <div id="calendar"></div>    
+        <div id="calendar"></div>  
+        <form id="appointmentForm">
+  
     
         <div class="time_slots">
             <a class="advisor_time_slots" data-advisor-id="1">
@@ -63,11 +65,12 @@
             <div id="time-slot-list">
                 <!-- Time slots will be populated here dynamically -->
             </div>
+
             <p id="selected-date">Selected Date: </p> 
-            <input type="hidden" id="selected-time" name="selected-time">
             <input type="hidden" id="student-email" value="{{ student_email }}">
             <input type="hidden" id="advisor-email" name="advisor_email">
-            <input type="hidden" id="advisor-name" name="advisor_name">
+            <input type="hidden" id="advisor-name" name="first_name">
+            <input type="hidden" id="advisor-last" name="last_name">
             <input type="hidden" id="advisor-office" name="advisor-office">
         </div>
     </div>

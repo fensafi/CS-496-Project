@@ -61,7 +61,13 @@ class Appointment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     student_id = db.Column(db.BigInteger, db.ForeignKey('students.student_id'), nullable=False)
     advisor_id = db.Column(db.BigInteger, db.ForeignKey('advisors.advisor_id'), nullable=False)
+    student_email = db.Column(db.String(255), nullable=False)
+    advisor_email = db.Column(db.String(255), nullable=False)  
+    advisor_name = db.Column(db.String(255), nullable=False)
+    advisor_last_name = db.Column(db.String(255), nullable=False)  # Ensure this is defined
+    advisor_office = db.Column(db.String(255), nullable=True)
     datetime = db.Column(db.DateTime, nullable=False)
+    note = db.Column(db.Text, nullable=True)  # Optional field
     
     student = db.relationship('Student', backref='appointments', lazy=True, primaryjoin="Student.student_id == Appointment.student_id")
     advisor = db.relationship('Advisor', backref='appointments', lazy=True, primaryjoin="Advisor.advisor_id == Appointment.advisor_id")
@@ -69,10 +75,15 @@ class Appointment(db.Model):
     def to_dict(self):
         return {
             "id": self.id,
-            "studentName": self.student,
-            "date": self.datetime,
-            "studentId": self.student_id
+            "student_name": self.student_name,
+            "advisor_name": self.advisor_name,
+            "advisor_last_name": self.advisor_last_name,
+            "advisor_email": self.advisor_email,
+            "advisor_office": self.advisor_office,
+            "datetime": self.datetime,
+            "note": self.note
         }
+
 
 class Availability(db.Model):
     __tablename__ = 'availabilities'

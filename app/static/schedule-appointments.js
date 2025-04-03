@@ -28,7 +28,7 @@ function fetchAppointments() {
                     <li>
                         <input type="radio" name="appointment" value="${appointment.id}" id="appointment-${index}">
                         <label for="appointment-${index}">
-                            <strong>Advisor:</strong> ${appointment.advisor_name}<br>
+                            <strong>Advisor:</strong> ${appointment.advisor_name} ${appointment.advisor_last_name}<br>
                             <strong>Advisor Email:</strong> <a href="mailto:${appointment.advisor_email}">${appointment.advisor_email}</a><br>
                             <strong>Office:</strong> ${appointment.advisor_office}<br>
                             <strong>Date & Time:</strong> ${appointment.datetime}<br>
