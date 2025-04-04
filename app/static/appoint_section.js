@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
+    console.log("DOMContentLoaded event triggered"); // Log when DOM is ready
     fetchAppointments();
     document.getElementById("cancel").addEventListener("click", function () {
         cancelAppointment();
@@ -6,10 +7,12 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function fetchAppointments() {
-    fetch('/api/appointments/student')
+    console.log("Fetching appointments..."); // Log before the fetch call
+    fetch('/api/appointments/advisor')
         .then(response => response.json())
         .then(data => {
-            const appointmentsContainer = document.querySelector('.scheduled_appointments');
+            console.log("API Response:", data);
+            const appointmentsContainer = document.querySelector('.advisors_scheduled_appointments');
             appointmentsContainer.innerHTML = ''; // Clear previous content
 
             if (data.error) {
@@ -24,13 +27,14 @@ function fetchAppointments() {
 
             let appointmentsHTML = '<ul>';
             data.forEach((appointment, index) => {
+                console.log("Appointment Object:", appointment); // Log each individual appointment
                 appointmentsHTML += `
                     <li>
                         <input type="radio" name="appointment" value="${appointment.id}" id="appointment-${index}">
                         <label for="appointment-${index}">
-                            <strong>Advisor:</strong> ${appointment.advisor_name} ${appointment.advisor_last_name}<br>
-                            <strong>Advisor Email:</strong> <a href="mailto:${appointment.advisor_email}">${appointment.advisor_email}</a><br>
-                            <strong>Office:</strong> ${appointment.advisor_office}<br>
+                            <strong>Student:</strong> ${appointment.student_name} ${appointment.student_last_name}<br>
+                            <strong>Student Email:</strong> <a href="mailto:${appointment.student_email}">${appointment.student_email}</a><br>
+                            <strong>Student ID:</strong> ${appointment.student_id}<br>
                             <strong>Date & Time:</strong> ${appointment.datetime}<br>
                             <strong>Note:</strong> ${appointment.note}
                         </label>

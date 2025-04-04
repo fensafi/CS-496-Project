@@ -68,6 +68,8 @@
 
             <p id="selected-date">Selected Date: </p> 
             <input type="hidden" id="student-email" value="{{ student_email }}">
+            <input type="hidden" id="student-name" value="{{ student_name }}">
+            <input type="hidden" id="student-last-name" value="{{ student_last_name}}">
             <input type="hidden" id="advisor-email" name="advisor_email">
             <input type="hidden" id="advisor-name" name="first_name">
             <input type="hidden" id="advisor-last" name="last_name">
@@ -90,7 +92,9 @@
                 <p>270-745-8848</p>
             </div>
             <div class="footer-right">
-        
+                <li class="nav-item">
+                    <a class="nav-link-footer-right" href="{{ url_for('home') }}">Logout</a>
+                </li>
             </div>
         </div>
     </footer>

@@ -62,6 +62,8 @@ class Appointment(db.Model):
     student_id = db.Column(db.BigInteger, db.ForeignKey('students.student_id'), nullable=False)
     advisor_id = db.Column(db.BigInteger, db.ForeignKey('advisors.advisor_id'), nullable=False)
     student_email = db.Column(db.String(255), nullable=False)
+    student_name = db.Column(db.String(255), nullable=False)
+    student_last_name = db.Column(db.String(255), nullable=False)
     advisor_email = db.Column(db.String(255), nullable=False)  
     advisor_name = db.Column(db.String(255), nullable=False)
     advisor_last_name = db.Column(db.String(255), nullable=False)  # Ensure this is defined
@@ -76,6 +78,9 @@ class Appointment(db.Model):
         return {
             "id": self.id,
             "student_name": self.student_name,
+            "student_id": self.student_id,
+            "student_last_name": self.last_name,
+            "student_email": self.student_email,
             "advisor_name": self.advisor_name,
             "advisor_last_name": self.advisor_last_name,
             "advisor_email": self.advisor_email,
@@ -83,6 +88,7 @@ class Appointment(db.Model):
             "datetime": self.datetime,
             "note": self.note
         }
+
 
 
 class Availability(db.Model):

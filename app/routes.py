@@ -7,13 +7,12 @@ from flask_login import login_required, login_user, logout_user, LoginManager
 from flask import Flask, request, jsonify  # Ensure jsonify is imported
 import re
 from datetime import datetime
-from flask import session
 import urllib.parse
 from sqlalchemy import func
 from fastapi import FastAPI, Depends, Request
 from fastapi.responses import JSONResponse
 from flask import Blueprint, session, jsonify
-from flask import session
+
 
 
 
@@ -56,6 +55,8 @@ def init_routes(app):
                 login_user(user)
                 session['user_type'] = 'advisor'
                 session['user_id'] = user.advisor_id  # Store advisor ID in session
+                session['advisor_email'] = user.email
+                print("Advisor email stored in session:", session['advisor_email']) 
                 return redirect(url_for('advisor_dashboard'))
 
             # Check Administration table (No changes)
@@ -106,7 +107,7 @@ def init_routes(app):
     @app.route('/advisors_availability')
     def advisors_availability():
         if session.get('user_type') == 'advisor':
-            advsior = Advisor.query.filter_by(advisor_id=session.get('user_id')).first()
+            advisor = Advisor.query.filter_by(advisor_id=session.get('user_id')).first()
             return render_template('advisors_availability.html')
         return redirect(url_for('login'))
     
@@ -316,7 +317,7 @@ def init_routes(app):
         datetime_str = data.get('datetime')
         student_note = data.get('note', '')
 
-        # Check if all required fields are provided
+        # Check if required fields are provided
         if not student_email or not advisor_email or not datetime_str:
             return jsonify({'error': 'Missing required fields'}), 400
 
@@ -326,21 +327,26 @@ def init_routes(app):
         except ValueError:
             return jsonify({'error': 'Invalid date format'}), 400
 
-        # Get the student_id from student_email
+        # Retrieve student details from database
         student = Student.query.filter_by(email=student_email).first()
         if not student:
             return jsonify({'error': 'Student not found'}), 400
+        
+        student_name = student.first_name  # Assuming column is `first_name`
+        student_last_name = student.last_name  # Assuming column is `last_name`
 
-        # Get the advisor_id from advisor_email
+        # Retrieve advisor details from database
         advisor = Advisor.query.filter_by(email=advisor_email).first()
         if not advisor:
             return jsonify({'error': 'Advisor not found'}), 400
 
         # Create new Appointment record
         appointment = Appointment(
-            student_id=student.student_id,  # Use the student_id from the Student record
-            advisor_id=advisor.advisor_id,  # Use the advisor_id from the Advisor record
+            student_id=student.student_id,
+            advisor_id=advisor.advisor_id,
             student_email=student_email,
+            student_name=student_name,
+            student_last_name=student_last_name,
             advisor_email=advisor_email,
             advisor_name=advisor_name,
             advisor_last_name=advisor_last_name,
@@ -360,8 +366,9 @@ def init_routes(app):
             return jsonify({'error': 'Error saving appointment'}), 500
 
 
-    @app.route('/api/appointments', methods=['GET'])
-    def get_appointments():
+
+    @app.route('/api/appointments/student', methods=['GET'])
+    def get_appointments_for_students():
         student_email = session.get('student_email')  # Retrieve logged-in student's email
         if not student_email:
             return jsonify({"error": "User not logged in"}), 401
@@ -408,6 +415,64 @@ def init_routes(app):
         db.session.commit()
 
         return jsonify({"message": "Appointment canceled successfully!"})
+    
+
+    @app.route('/api/appointments/advisor', methods=['GET'])
+    def get_appointments_for_advisors():
+        advisor_email = session.get('advisor_email')  # Retrieve logged-in advisor's email
+        if not advisor_email:
+            return jsonify({"error": "User not logged in"}), 401
+
+        # Get the current datetime
+        current_time = datetime.now()
+
+        # Fetch only upcoming appointments for the logged-in advisor
+        appointments = Appointment.query.filter(
+            Appointment.advisor_email == advisor_email,
+            Appointment.datetime > current_time  # Filter out past appointments
+        ).all()
+
+        # Convert appointment objects to dictionary format for JSON response
+        appointments_list = [
+            {
+                "id": appointment.id,  # Include ID for canceling
+                "student_name": appointment.student_name,  # Use student_name from Appointment model
+                "student_last_name": appointment.student_last_name,  # Use student_last_name from Appointment model
+                "student_email": appointment.student_email,  # Use student_email from Appointment model
+                "student_id": appointment.student_id,  # Use student_id from Appointment model
+                "datetime": appointment.datetime.strftime("%Y-%m-%d %H:%M"),
+                "note": appointment.note if appointment.note else "n/a"
+            }
+            for appointment in appointments
+        ]
+
+        return jsonify(appointments_list)
+
+
+    @app.route('/api/advisor/appointments/<int:appointment_id>', methods=['DELETE'])
+    def advisor_delete_appointment(appointment_id):
+        advisor_email = session.get('advisor_email')  # Ensure the advisor is logged in
+        if not advisor_email:
+            return jsonify({"error": "User not logged in"}), 401
+
+        # Find the appointment by ID and advisor email
+        appointment = Appointment.query.filter_by(id=appointment_id, advisor_email=advisor_email).first()
+
+        if not appointment:
+            return jsonify({"error": "Appointment not found"}), 404
+
+        # Delete the appointment
+        db.session.delete(appointment)
+        db.session.commit()
+
+        return jsonify({"message": "Appointment canceled successfully by advisor!"})
+
+
+
+
+
+ 
+
 
     
 
