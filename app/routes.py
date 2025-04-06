@@ -12,6 +12,7 @@ from sqlalchemy import func
 from fastapi import FastAPI, Depends, Request
 from fastapi.responses import JSONResponse
 from flask import Blueprint, session, jsonify
+from app.email import send_appointment_confirmation
 
 
 
@@ -359,6 +360,13 @@ def init_routes(app):
         try:
             db.session.add(appointment)
             db.session.commit()
+            send_appointment_confirmation(
+                student_email=data['student_email']
+                appointment_data={
+                    'advisor_name': data['advisor_name']
+                    'appointment_time': data['appointment_time']
+                }
+            )
             return jsonify({'success': True}), 200
         except Exception as e:
             db.session.rollback()
