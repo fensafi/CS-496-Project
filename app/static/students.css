@@ -80,13 +80,13 @@ main {
     display: flex;
     flex-direction: column;
     overflow-y: auto; /* Allows scrolling if advisors exceed height */
-    background-color: #ffff;
+    background-color: rgba(254, 254, 254, 0.73);
     align-items: flex-end;
     align-items: flex-start;
 }
 
 #advisor-container.list-group.active {
-    background-color: #ffff; 
+    background-color: rgba(254, 254, 254, 0.73); 
     color: black !important; 
     border: none;
     font-weight: bold; 
@@ -103,7 +103,7 @@ main {
 
 
 #calendar {
-    background-color: #ffff;
+    background-color: rgba(254, 254, 254, 0.829);
     padding: 0px;
     width: 700px;
     height: 300px;
@@ -121,6 +121,7 @@ main {
     background-color: #ffff;
     flex-direction: column;
     overflow-y: auto; 
+    background-color: rgba(254, 254, 254, 0.73);
 }
 
 .available-event {
@@ -146,6 +147,7 @@ main {
     border-radius: 5px;
     margin-top: 30px;
     margin-left: 400px;
+    background-color: rgba(254, 254, 254, 0.73);
 
 }
 

@@ -10,6 +10,8 @@ class Student(UserMixin, db.Model):
     last_name = db.Column(db.String(50), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(256), nullable=False)
+    
+
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
@@ -29,6 +31,8 @@ class Advisor(UserMixin, db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(256), nullable=False)
     office = db.Column(db.String(100), nullable=False)
+   
+
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
@@ -45,6 +49,8 @@ class Administration(UserMixin, db.Model):
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(256), nullable=False)
+    
+
 
     def set_password(self, password):
         self.password = generate_password_hash(password)

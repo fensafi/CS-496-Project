@@ -17,6 +17,8 @@ from app.email import send_appointment_confirmation
 
 
 
+
+
 login_manager = LoginManager()
 
 def init_routes(app):
@@ -474,6 +476,13 @@ def init_routes(app):
         db.session.commit()
 
         return jsonify({"message": "Appointment canceled successfully by advisor!"})
+
+
+    
+    
+   
+
+
 
 
 
