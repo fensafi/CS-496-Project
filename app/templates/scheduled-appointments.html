@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Scheduled Appointments{% endblock %}
+
+{% block stylesheets %}
+    <!-- Specific stylesheet for this page -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='/css/scheduled-appointments.css') }}">
+{% endblock %}
+
+{% block content %}
+
+    <h1>Upcoming Appointments</h1>
+
+    <div class="container">
+        {% if appointments %}
+            <table class="table table-striped">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Advisor Name</th>
+                        <th>Date</th>
+                        <th>Start Time</th>
+                        <th>End Time</th>
+                        <th>Office</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for appointment, advisor in appointments %}
+                        <tr>
+                            <td>{{ advisor.first_name }} {{ advisor.last_name }}</td>
+                            <td>{{ appointment.date.strftime('%B %d, %Y') }}</td>
+                            <td>{{ appointment.start_time.strftime('%I:%M %p') }}</td>
+                            <td>{{ appointment.end_time.strftime('%I:%M %p') }}</td>
+                            <td>{{ advisor.office }}</td>
+                            <td>
+                                <!-- Form to delete the appointment -->
+                                <form action="{{ url_for('cancel_appointment', appointment_id=appointment.appointment_id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this appointment?');">
+                                    <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="text-center mt-4">You have no scheduled appointments at this time.</p>
+        {% endif %}
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+    <!-- Specific script for this page -->
+{% endblock %}
+

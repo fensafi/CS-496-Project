@@ -1,12 +1,21 @@
 from flask import render_template, request, redirect, url_for, flash, session
-from .models import Student, Advisor, Administration
+from .models import Student, Advisor, Administration, Appointment, Availability, Note
 from . import db
 from .models import Availability
 from flask_login import login_required, login_user, logout_user, LoginManager
-from flask import Flask, request, jsonify  # Ensure jsonify is imported
+from flask import Flask, request, jsonify  
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask import session
+from flask_login import current_user
+from collections import defaultdict
+from app.email import send_appointment_confirmation
+from flask_mail import Mail, Message
+from app import mail
+from itsdangerous import URLSafeTimedSerializer
+
+
+
 
 login_manager = LoginManager()
 
@@ -21,7 +30,9 @@ def init_routes(app):
         return user
 
 
+    
     ''' Home & Login'''
+
     @app.route('/')
     @app.route('/home')
     def home():
@@ -67,90 +78,503 @@ def init_routes(app):
         session.pop('user_type', None)
         return redirect(url_for('home'))
 
+    @app.route('/change_password', methods=['GET', 'POST'])
+    @login_required
+    def change_password():
+        if request.method == 'POST':
+            current_pwd = request.form['current_password']
+            new_pwd = request.form['new_password']
+            confirm_pwd = request.form['confirm_password']
+
+            if new_pwd != confirm_pwd:
+                flash('New passwords do not match.', 'danger')
+                return redirect(url_for('change_password'))
+
+            if not current_user.check_password(current_pwd):
+                flash('Current password is incorrect.', 'danger')
+                return redirect(url_for('change_password'))
+
+            current_user.set_password(new_pwd)
+            db.session.commit()
+            flash('Password changed successfully.', 'success')
+            return redirect(url_for('home'))
+
+        return render_template('change-password.html')
+
+    @app.route('/forgot_password', methods=['GET', 'POST'])
+    def forgot_password():
+        if request.method == 'POST':
+            email = request.form['email']
+            
+            # Check if the email exists in any of the tables (Students, Advisors, Administration)
+            student = Student.query.filter_by(email=email).first()
+            advisor = Advisor.query.filter_by(email=email).first()
+            admin = Administration.query.filter_by(email=email).first()
+
+            # If no user is found, flash an error message
+            if not student and not advisor and not admin:
+                flash('No account associated with this email address.', 'danger')
+                return redirect(url_for('forgot_password'))
+
+            user = None
+            if student:
+                user = student
+            elif advisor:
+                user = advisor
+            elif admin:
+                user = admin
+            # Here, you would send the reset email (same logic as before)
+            # For simplicity, let's assume sending the reset email is done by a function
+            s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+            token = s.dumps(user.email, salt='password-reset-salt')
+            reset_url = url_for('reset_password', token=token, _external=True)
+            
+            msg = Message(
+                'Password Reset Request',
+                recipients=[user.email],
+                body=f'Click the link to reset your password: {reset_url}'
+            )
+            mail.send(msg)
+            flash('Password reset link has been sent to your email.', 'info')
+            return redirect(url_for('login'))
+
+        return render_template('forgot-password.html')
+
+
+    @app.route('/reset_password/<token>', methods=['GET', 'POST'])
+    def reset_password(token):
+        user = User.verify_reset_token(token)
+        if not user:
+            flash('Invalid or expired token', 'danger')
+            return redirect(url_for('forgot_password'))
+
+        if request.method == 'POST':
+            new_password = request.form['new_password']
+            confirm = request.form['confirm_password']
+            if new_password != confirm:
+                flash('Passwords do not match', 'danger')
+                return redirect(request.url)
+
+            user.set_password(new_password)
+            db.session.commit()
+            flash('Your password has been updated.', 'success')
+            return redirect(url_for('login'))
+
+        return render_template('reset-password.html')
+
+
 
     ''' Student Dashboard'''
-    @app.route('/student_dashboard')
-    def student_dashboard():
-        if session.get('user_type') == 'student':
-            student = Student.query.filter_by(student_id=session.get('user_id')).first()
-            return render_template('student_dashboard.html', student=student)
-        return redirect(url_for('login'))
-    
-    @app.route('/schedule-appointments')
-    def schedule_appointments():
-        if session.get('user_type') == 'student':
-            student = Student.query.filter_by(student_id=session.get('user_id')).first()
-            return render_template('schedule-appointments.html', student=student)
-        return redirect(url_for('login'))
 
-    @app.route('/advisors_availability')
-    def advisors_availability():
-        if session.get('user_type') == 'advisor':
-            advsior = Advisor.query.filter_by(advisor_id=session.get('user_id')).first()
-            return render_template('advisors_availability.html')
-        return redirect(url_for('login'))
-    
+    @app.route('/student_dashboard')
+    @login_required  # Ensure user is logged in
+    def student_dashboard():
+        if current_user.is_authenticated:
+            advisors = Advisor.query.all()  # Get all advisors
+            return render_template('student-dashboard.html', advisors=advisors, student_email=current_user.email)
+        else:
+            return redirect(url_for('login'))
+
+    # Route for fetching advisor details
+    @app.route('/api/advisors')
+    def get_advisors():
+        advisors = Advisor.query.all()
+        advisor_data = []
+        for advisor in advisors:
+            advisor_data.append({
+                'advisor_id': advisor.advisor_id,
+                'first_name': advisor.first_name,
+                'last_name': advisor.last_name,
+                'department': advisor.office  # Assuming department information is stored in 'office'
+            })
+        return jsonify(advisor_data)
+
+    # Route for fetching advisor details by name
+    @app.route('/api/advisors/<advisor_id>')
+    def get_advisor_details(advisor_id):
+        advisor = Advisor.query.filter_by(advisor_id=advisor_id).first()
+        if advisor:
+            return jsonify({
+                'name': f"{advisor.first_name} {advisor.last_name}",
+                'advisor_id': advisor.advisor_id,
+                'email': advisor.email,
+                'office': advisor.office
+            })
+        else:
+            return jsonify({'error': 'Advisor not found'}), 404
+
+    # Route for fetching availability dates for a specific advisor
+    @app.route('/api/availability/<advisor_id>/dates')
+    def get_availability_dates(advisor_id):
+        advisor = Advisor.query.filter_by(advisor_id=advisor_id).first()
+        
+        if advisor:
+            availabilities = Availability.query.filter_by(advisor_id=advisor.advisor_id).all()
+            available_dates = sorted(set([a.date for a in availabilities]))  # Get unique available dates
+            return jsonify({'dates': available_dates})
+        else:
+            return jsonify({'error': 'Advisor not found'}), 404
+
+    @app.route('/api/availability/times/<selected_date>')
+    def get_available_times(selected_date):
+        try:
+            parsed_date = datetime.strptime(selected_date, "%Y-%m-%d").date()
+        except ValueError:
+            return jsonify({'error': 'Invalid date format'}), 400
+
+        available_times = Availability.query.filter_by(date=parsed_date).all()
+
+        formatted_slots = [
+            f"{a.start_time.strftime('%I:%M %p')} - {a.end_time.strftime('%I:%M %p')}"
+            for a in available_times
+        ]
+
+        return jsonify({'availableTimes': formatted_slots})
+
+    @app.route('/api/availabilities/summary')
+    def get_all_availability_summary():
+        availabilities = Availability.query.all()
+        day_counts = defaultdict(int)
+
+        for a in availabilities:
+            day_counts[a.date] += 1
+
+        events = [{
+            'title': f"{count} availabilities",
+            'start': date.isoformat(),
+            'allDay': True
+        } for date, count in day_counts.items()]
+
+        return jsonify(events)
+
+    # Route to handle appointment creation via fetch() POST request
+    # Creates appointment from student only 
+    @app.route('/api/appointments', methods=['POST'])
+    @login_required
+    def api_create_appointment():
+        data = request.get_json()
+
+        # Extract data from the request body
+        advisor_name = data.get("advisor_name")
+        advisor_id = data.get("advisor_id")
+        student_email = data.get("student_email")
+        date_str = data.get("date")
+        time_str = data.get("time")
+        note_text = data.get("note")
+
+        # Convert date_str to a datetime object
+        try:
+            appointment_date = datetime.strptime(date_str, "%Y-%m-%d")  # assuming date format like '2025-04-05'
+        except ValueError:
+            return jsonify({"error": "Invalid date format. Expected YYYY-MM-DD."}), 400
+
+        # Split time_str into start_time and end_time (assuming format like '12:24 AM - 12:27 AM')
+        try:
+            time_parts = time_str.split(" - ")
+            start_time_str = time_parts[0]
+            end_time_str = time_parts[1]
+            
+            # Convert start and end times to datetime objects (you can adjust format as needed)
+            start_time = datetime.strptime(start_time_str, "%I:%M %p")  # Assuming format like '12:24 AM'
+            end_time = datetime.strptime(end_time_str, "%I:%M %p")  # Assuming format like '12:27 AM'
+        except (ValueError, IndexError):
+            return jsonify({"error": "Invalid time format. Expected format 'hh:mm AM/PM - hh:mm AM/PM.'"}), 400
+
+        # Fetch advisor using the advisor_name (assuming a lookup by name)
+        advisor = Advisor.query.filter_by(advisor_id=advisor_id).first()
+
+        if not advisor:
+            return jsonify({"error": "Advisor not found."}), 404
+
+        # Assuming you already have the current_user object that provides the student ID
+        appointment = Appointment(
+            student_id=current_user.student_id,
+            advisor_id=advisor.advisor_id,
+            date=appointment_date,
+            start_time=start_time,
+            end_time=end_time,
+        )
+
+        # Save appointment
+        db.session.add(appointment)
+        db.session.commit()
+
+
+
+        # Now, delete the availability for that time slot (assuming it's already in the Availability model)
+        availability = Availability.query.filter_by(advisor_id=advisor.advisor_id, date=appointment_date, 
+                                                    start_time=start_time.time(), end_time=end_time.time()).first()
+
+        if availability:
+            db.session.delete(availability)
+            db.session.commit()
+
+        # Save note if provided
+        if note_text and note_text.strip():
+            new_note = Note(
+                appointment_id = appointment.appointment_id,
+                user_id = current_user.student_id,
+                user_type = 'student',
+                content = note_text,
+            )
+            db.session.add(new_note)
+            db.session.commit()
+
+        return jsonify({"message": "Appointment (and note) created successfully"}), 201
+
+
+    @app.route('/api/availabilities/summary/<int:advisor_id>')
+    def get_advisor_availability_summary(advisor_id):
+        availabilities = Availability.query.filter_by(advisor_id=advisor_id).all()
+        day_counts = defaultdict(int)
+
+        for a in availabilities:
+            day_counts[a.date] += 1
+
+        events = [{
+            'title': f"{count} availabilities",
+            'start': date.isoformat(),
+            'allDay': True
+        } for date, count in day_counts.items()]
+
+        return jsonify(events)
+
+    '''
+    @app.route('/api/note', methods=['POST'])
+    @login_required
+    def api_create_note():
+        data = request.get_json()
+
+        advisor_name = data.get("advisor_name")
+        student_email = data.get("student_email")
+        date_str = data.get("date")
+        time_str = data.get("time")
+
+        if not all([advisor_name, student_email, date_str, time_str]):
+            return jsonify({"error": "Missing required fields"}), 400
+
+        # Get advisor ID based on name
+        try:
+            first, last = advisor_name.strip().split(" ", 1)
+            advisor = Advisor.query.filter_by(first_name=first, last_name=last).first()
+        except ValueError:
+            return jsonify({"error": "Invalid advisor name format"}), 400
+
+        if not advisor:
+            return jsonify({"error": "Advisor not found"}), 404
+
+        try:
+            # Parse date and time
+            date_obj = datetime.strptime(date_str, '%Y-%m-%d').date()
+            time_parts = time_str.split(' - ')
+            start_time_obj = datetime.strptime(time_parts[0], '%I:%M %p').time()
+            end_time_obj = datetime.strptime(time_parts[1], '%I:%M %p').time()
+        except Exception as e:
+            return jsonify({"error": f"Invalid date/time format: {str(e)}"}), 400
+
+        # Create new appointment
+        new_appointment = Appointment(
+            student_id=current_user.student_id,
+            advisor_id=advisor.advisor_id,
+            date=date_obj,
+            start_time=start_time_obj,
+            end_time=end_time_obj,
+            status='pending'
+        )
+
+        db.session.add(new_appointment)
+        db.session.commit()
+
+        return jsonify({"message": "Appointment created successfully"}), 201
+    '''
+
+    @app.route('/scheduled-appointments')
+    @login_required
+    def scheduled_appointments():
+        if not hasattr(current_user, 'student_id'):
+            return redirect(url_for('home'))  # Prevent access if not a student
+
+        appointments = (
+            db.session.query(Appointment, Advisor)
+            .join(Advisor, Appointment.advisor_id == Advisor.advisor_id)
+            .filter(Appointment.student_id == current_user.student_id)
+            .order_by(Appointment.date, Appointment.start_time)
+            .all()
+        )
+
+        return render_template('scheduled-appointments.html', appointments=appointments)
+
+
 
     ''' Advisor Dashboard'''
+
     @app.route('/advisor_dashboard')
     def advisor_dashboard():
         if session.get('user_type') == 'advisor':
             advisor = Advisor.query.filter_by(advisor_id=session.get('user_id')).first()
-            return render_template('advisor_dashboard.html')
+            
+            # Get the week requested by the user (default to the current week)
+            requested_week = request.args.get('week', None)
+            
+            # Get today's date and calculate the start of the current week (Monday)
+            today = datetime.today()
+            if requested_week:
+                start_of_week = datetime.strptime(requested_week, "%Y-%m-%d")
+            else:
+                start_of_week = today - timedelta(days=today.weekday())  # Monday of current week
+
+            end_of_week = start_of_week + timedelta(days=6)  # Sunday of the same week
+
+            # Filter appointments for the selected week
+            appointments = Appointment.query.filter(
+                Appointment.advisor_id == advisor.advisor_id,
+                Appointment.date >= start_of_week.date(),
+                Appointment.date <= end_of_week.date()
+            ).order_by(Appointment.date, Appointment.start_time).all()
+
+             # 👉 Aggregate notes for each appointment
+            for appointment in appointments:
+                note_lines = []
+                for note in appointment.notes:
+                    line = f"{note.user_type.capitalize()}: {note.content}"
+                    note_lines.append(line)
+                appointment.aggregated_notes = "\n".join(note_lines)
+
+
+            availabilities = Availability.query.filter(
+                Availability.advisor_id == advisor.advisor_id,  
+                Availability.date >= start_of_week.date(),
+                Availability.date <= end_of_week.date()
+            ).order_by(Availability.date, Availability.start_time).all()
+
+            return render_template('advisor-dashboard.html', 
+                                    appointments=appointments,
+                                    availabilities=availabilities,  
+                                    start_of_week=start_of_week.date(),
+                                    end_of_week=end_of_week.date())
+
         return redirect(url_for('login'))
 
-    @app.route("/add_availability", methods=["POST"])
-    def add_availability():
+    @app.route("/set_availability", methods=["POST"])
+    def set_availability():
         try:
-            data = request.get_json()
-            print("Received data:", data)  # Debugging output
+            selected_date = request.form.get("date")
+            start_time = request.form.get("start_time")
+            end_time = request.form.get("end_time")
+            advisor_id = session.get("user_id")
 
-            selected_date = data.get("date")
-            selected_time = data.get("time")
-            advisor_email = data.get("email")  # Get the email from the session
+            if not all([selected_date, start_time, end_time, advisor_id]):
+                return jsonify({"message": "Missing required fields"}), 400
 
-            # Debugging prints
-            print(f"Extracted values - Date: {selected_date}, Time: {selected_time}, Advisor Email: {advisor_email}")
+            formatted_date = datetime.strptime(selected_date, "%Y-%m-%d").date()
+            formatted_start = datetime.strptime(start_time, "%H:%M")
+            formatted_end = datetime.strptime(end_time, "%H:%M")
 
-            # Ensure required fields are present
-            if not selected_date:
-                print("Error: Missing selected_date")
-                return jsonify({"message": "Missing date"}), 400
-            if not selected_time:
-                print("Error: Missing selected_time")
-                return jsonify({"message": "Missing time"}), 400
-            if not advisor_email:
-                print("Error: Missing advisor_email")
-                return jsonify({"message": "Missing advisor email"}), 400
+            current = formatted_start
+            while current < formatted_end:
+                slot_start = current
+                slot_end = current + timedelta(minutes=15)
 
-            # Validate and format datetime
-            try:
-                selected_datetime = datetime.strptime(f"{selected_date} {selected_time}", "%Y-%m-%d %I:%M %p")
-            except ValueError as e:
-                print(f"Datetime Parsing Error: {str(e)}")
-                return jsonify({"message": f"Invalid datetime format: {str(e)}"}), 400
+                availability = Availability(
+                    advisor_id=advisor_id,
+                    date=formatted_date,
+                    start_time=slot_start.time(),
+                    end_time=slot_end.time()  # ⬅️ Add this to satisfy NOT NULL constraint
+                )
 
-            # Create availability record (only storing email and datetime)
-            availability = Availability(
-                advisor_email=advisor_email,
-                datetime=selected_datetime  # ✅ Use datetime instead of separate date/time fields
-            )
+                db.session.add(availability)
+                current += timedelta(minutes=15)
 
-            # Save to database
-            db.session.add(availability)
             db.session.commit()
 
-            print(f"Saved availability: {selected_datetime}")  # Debugging output
-
-            return jsonify({"message": "Availability added successfully!"}), 200
+            print(f"Saved 15-minute slots from {formatted_start.time()} to {formatted_end.time()} on {formatted_date}")
 
         except Exception as e:
-            db.session.rollback()  # Rollback transaction on error
+            db.session.rollback()
             print(f"Error: {str(e)}")
             return jsonify({"message": "Error while adding availability."}), 500
 
+        return redirect(url_for('advisor_dashboard'))
+
+
+    @app.route('/delete_availability/<int:availability_id>', methods=['POST'])
+    def delete_availability(availability_id):
+        availability = Availability.query.get(availability_id)
+        
+        if availability:
+            db.session.delete(availability)
+            db.session.commit()
+            print(f"DELETE route hit with ID: {availability_id}")
+        
+        # After deletion, redirect to the advisor dashboard or any other page you want
+        return redirect(url_for('advisor_dashboard'))
+
+
+    @app.route('/advisor_dashboard/cancel/<int:appointment_id>', methods=['POST'])
+    @login_required
+    def cancel_appointment(appointment_id):
+        appointment = Appointment.query.get(appointment_id)
+        
+        if appointment:
+            try:
+                db.session.delete(appointment)
+                db.session.commit()
+                flash('Appointment deleted successfully!', 'success')
+
+            except Exception as e:
+                db.session.rollback()
+                flash(f'Error deleting appointment: {str(e)}', 'danger')
+        else:
+            flash('Appointment not found!', 'danger')
+
+        return redirect(url_for('advisor_dashboard'))
+
+
+    @app.route('/add_note', methods=['POST'])
+    @login_required
+    def add_note():
+        appointment_id = request.form.get('appointment_id')
+        note_content = request.form.get('note_content')
+
+        # Validate form inputs
+        if not appointment_id or not note_content:
+            flash("Missing information", "danger")
+            return redirect(url_for('advisor_dashboard'))
+
+        # Ensure user is authenticated (redundant with @login_required, but kept for clarity)
+        if not current_user.is_authenticated:
+            flash("You must be logged in to add a note.", "danger")
+            return redirect(url_for('login'))
+
+        # Retrieve appointment
+        appointment = Appointment.query.get(appointment_id)
+        if not appointment:
+            flash("Appointment not found", "danger")
+            return redirect(url_for('advisor_dashboard'))
+
+        # Determine user type and ID
+        is_advisor = hasattr(current_user, 'advisor_id')
+        user_id = current_user.advisor_id if is_advisor else current_user.student_id
+        user_type = "advisor" if is_advisor else "student"
+
+        # Create the note
+        new_note = Note(
+            appointment_id=appointment_id,
+            user_id=user_id,
+            user_type=user_type,
+            content=note_content
+        )
+
+        # Save to the database
+        db.session.add(new_note)
+        db.session.commit()
+
+        flash("Note added successfully!", "success")
+        return redirect(url_for('advisor_dashboard'))
+
 
     ''' Admin Dashboard'''
+
     @app.route('/admin_dashboard', methods=['GET', 'POST'])
     @login_required
     def admin_dashboard():
@@ -162,7 +586,7 @@ def init_routes(app):
         advisors = Advisor.query.all()
         admins = Administration.query.all()
 
-        return render_template('admin_dashboard.html', students=students, advisors=advisors, admins=admins)
+        return render_template('admin-dashboard.html', students=students, advisors=advisors, admins=admins)
     
     # Create User 
     @app.route('/admin/create_user', methods=['POST'])
@@ -211,7 +635,7 @@ def init_routes(app):
             user = Advisor.query.filter_by(advisor_id=user_id).first()
         elif user_type == "admin":
             print("DEBUG: Attempting to delete an admin.")
-            user = Administration.query.filter_by(id=user_id).first()
+            user = Administration.query.filter_by(admin_id=user_id).first()
         else:
             print(f"DEBUG: Invalid user_type received: {user_type}")
             flash('Invalid user type!', 'danger')
@@ -266,7 +690,7 @@ def init_routes(app):
                 Administration.name.ilike(f"%{query}%")
             ).all()
 
-        return render_template('admin_dashboard.html', students=students, advisors=advisors, admins=admins, query=query)
+        return render_template('admin-dashboard.html', students=students, advisors=advisors, admins=admins, query=query)
 
 
 

@@ -1,0 +1,190 @@
+
+/* Header */
+h1 {
+    font-weight: 400;
+    color: #B01E24;
+    line-height: 2.5;
+}
+
+.container {
+
+    margin-top: 40px;
+}
+
+.week-nav {
+    display: flex;
+    justify-content: space-between;
+}
+
+.btn-go {
+    text-align: right;
+    margin-bottom: 15px;
+}
+
+.submit-btn {
+    display: block;
+    margin-left: auto;
+}
+
+/* Subheadings */
+h2, h3 {
+    color: #555;
+}
+
+h3 {
+    font-size: 18px;
+}
+
+/* Table Styles */
+table {
+    width: 80%;
+    margin: 20px auto;
+    border-collapse: collapse;
+    background: white;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 50px;
+}
+
+th, td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+th {
+    background-color: #B01E24;
+    color: white;
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Form Styles */
+form {
+    background: white;
+    width: 50%;
+    margin: 20px auto;
+    padding: 20px;
+    border-radius: 8px;
+    /*box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); */
+}
+
+label {
+    font-weight: bold;
+    display: block;
+    margin: 10px 0 5px;
+}
+
+input {
+    width: 100%;
+    padding: 8px;
+    margin: 5px 0 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+select {
+    width: 100%;
+    padding: 8px;
+    margin: 5px 0 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Buttons */
+button {
+    display: inline-block;
+    color: #B01E24;
+    font-weight: 400;
+    line-height: 1.4;
+    text-align: center;
+    vertical-align: middle;
+    background-color: transparent;
+    padding: 10px 20px;
+    border: 1px solid #B01E24;
+    border-radius: 0; 
+    cursor: pointer;
+    transition: background 0.3s ease;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    box-shadow: none;
+}
+
+button:hover, a:hover {
+    background-color: #B01E24;
+    color: white;
+}
+
+
+button:hover, a:hover {
+    background-color: #B01E24;
+    color: white
+}
+
+.btn-form {
+    background: transparent;
+}
+
+.note-btn {
+    margin-right: auto;
+}
+
+.cancel-btn {
+    width: 100%;
+    margin-top: 15px;
+}
+
+.dele-avail {
+    margin-right: auto;
+}
+
+/* Popup Modal Styling */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background-color: white;
+    margin: 10% auto;
+    padding:30px;
+    width: 50%;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.close {
+    float: right;
+    font-size: 20px;
+    cursor: pointer;
+    margin-left: auto
+}
+
+.modal-content form {
+    margin-bottom: 10px;
+    padding: 0;
+    border: none;
+    background-color: transparent;
+}
+
+.modal-content textarea {
+    width: 100%;
+    height: 100px;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}

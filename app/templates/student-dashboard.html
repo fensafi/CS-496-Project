@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Student Dashboard{% endblock %}
+
+{% block stylesheets %}
+    <!-- Specific stylesheet for this page -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='/css/student-dash.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+    <!-- Header Title -->
+
+    <div class="container">
+        <div class="list-group" id="advisor-container">
+            <div id="advisor-title">
+            </div>
+            <!-- Advisors will be populated here -->
+
+        </div>
+        
+        <div id="calendar"></div>    
+    
+        <div class="time_slots">
+            <a class="advisor_time_slots" data-advisor-id="1">
+                <h2>Select a Time</h2>
+            </a>
+            <div id="time-slot-list">
+                <!-- Time slots will be populated here dynamically -->
+            </div>
+            <p id="selected-date">Selected Date: </p> 
+            <input type="hidden" id="selected-time" name="selected-time">
+            <input type="hidden" id="student-email" value="{{ student_email }}">
+            <input type="hidden" id="advisor-email" name="advisor_email">
+            <input type="hidden" id="advisor-name" name="advisor_name">
+            <input type="hidden" id="advisor-id" name="advisor_id">
+            <input type="hidden" id="advisor-office" name="advisor_office">
+        </div>
+    </div>
+
+
+    <div class="note-container">
+        <input type="text" class="student-note" placeholder="Leave a note..." />
+        <button id="submitAppointment">Submit</button>
+    </div>
+    
+
+    
+{% endblock %}
+
+{% block scripts %}
+    <!-- Specific script for this page -->
+     <script src="{{ url_for('static', filename='/js/student-dash.js') }}"></script>
+     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
+     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get all the time slots
+            const timeSlots = document.querySelectorAll('.time-slot');
+    
+            timeSlots.forEach(function(timeSlot) {
+                timeSlot.addEventListener('click', function() {
+                    // Remove 'selected' class from all time slots
+                    timeSlots.forEach(function(slot) {
+                        slot.classList.remove('selected');
+                    });
+    
+                    // Add 'selected' class to the clicked time slot
+                    timeSlot.classList.add('selected');
+                    
+                    // Optionally, you can update the hidden input field with the selected time
+                    const selectedTime = timeSlot.querySelector('input').value;
+                    document.getElementById('selected-time').value = selectedTime;
+                });
+            });
+        });
+    </script>
+    
+{% endblock %}

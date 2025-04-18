@@ -1,0 +1,153 @@
+body {
+    font-family: "Open Sans", -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;           
+    flex-direction: column; 
+    min-height: 100vh;
+}
+
+/* Navbar Container */
+.navbar-home {
+    display: flex;
+    justify-content: space-between; /* Align items (logo, links) on opposite ends */
+    align-items: center;           
+    padding: 20px 20px;
+    background-color: #b01e24;
+    font-family: "Open Sans", -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    margin-bottom: 30px;
+}
+
+/* Logo Styling */
+.navbar-logo {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* Left Links Styling */
+.link-left {
+    display: flex;           /* Treat the left link container as a flexbox */
+    flex-direction: row;     /* Ensure links are in a row (horizontal) */
+}
+
+.link-left .nav-link {
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+    text-decoration: none;
+    margin-right: 20px;      /* Add spacing between left links */
+}
+
+.link-left .nav-link:hover {
+    text-decoration: underline;
+    color: white;
+}
+
+/* Right Links Styling */
+.link-right {
+    display: flex;           /* Treat the right link container as a flexbox */
+    flex-direction: row;     /* Ensure links are in a row (horizontal) */
+}
+
+.link-right .nav-link {
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+    text-decoration: none;
+    margin-left: 20px;       /* Add spacing between right links */
+}
+
+.link-right .nav-link:hover {
+    text-decoration: underline;
+    color: white;
+}
+
+.main-content {
+    flex: 1;                /* Allow the main content to grow and fill the available space */
+    display: flex;          /* Treat the main content as a flexbox */
+    flex-direction: column;  /* Stack children vertically */
+    justify-content: center; /* Center children vertically */
+    align-items: center;     /* Center children horizontally */
+    padding: 20px;
+}
+
+
+/* Header */
+h1 {
+    font-weight: 400;
+    color: #B01E24;
+    line-height: 2.5;
+}
+
+h2, h3 {
+    color: #555;
+}
+
+main {
+    margin-left: 10px;
+}
+
+button {
+    display: inline-block;
+    color: #B01E24;
+    font-weight: 400;
+    line-height: 1.4;
+    text-align: center;
+    vertical-align: middle;
+    background-color: transparent;
+    padding: 10px 20px;
+    border: 1px solid #B01E24;
+    border-radius: 0; 
+    cursor: pointer;
+    transition: background 0.3s ease;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    box-shadow: none;
+}
+
+.footer {
+    background-color: #222;
+    color: white;
+    padding: 30px 50px;
+    margin-top: 30px;
+    position: relative;
+
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.footer-left {
+    display: flex;
+    align-items: center;
+}
+
+.footer-left p {
+    max-width: 150px;
+}
+
+.footer-logo {
+    margin-right: 20px;
+    height: 60px;
+}
+
+.footer-right {
+    display: flex;
+    gap: 20px;
+}
+
+.social-icon svg {
+    width: 30px;
+    height: 30px;
+    fill: white;
+    transition: transform 0.3s;
+}
+
+.social-icon svg:hover {
+    transform: scale(1.1);
+}

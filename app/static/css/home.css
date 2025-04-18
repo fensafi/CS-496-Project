@@ -1,0 +1,140 @@
+body {
+    background-image: linear-gradient(rgba(81, 79, 79, 0.5), rgba(81, 79, 79, 0.5)), url('../images/background2.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+
+}
+
+.main-content {
+    min-height: 80vh; /* Ensures the main content takes at least the full viewport height */
+}
+
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 20px;
+    margin-top: 20px;
+    
+}
+
+
+.branding {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: fit-content;
+    min-width: 38%;
+}
+
+.logo {
+    background: transparent;
+}
+
+.title {
+    font-style: italic; /* Italicizes the title text */
+    color: white;
+    font-size: 36px; 
+    line-height: 1.0;
+    font-weight: 400;
+}
+
+.login-modal {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.login-btn {
+    color: white; 
+    border: 4px solid #b01e24;
+    transition: all 0.3s ease;
+    font-size: 28px;
+    padding: 10px 20px;
+    font-weight: 600;
+    margin-top: 80px
+}
+
+.login-btn:hover {
+    background-color: #b01e24;
+    border-color: #b01e24;
+    color: white;
+    text-decoration: none;;
+}
+
+.btn-wrapper {
+    display: flex;
+    justify-content: center;
+}
+
+.modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    width: 400px;
+}
+
+.form-label {
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+/* Style form input fields */
+.form-control {
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+    margin-top: 15px;
+}
+
+.form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+}
+
+/* Style the text */
+.form-text {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+/* Style the checkbox */
+.form-check-input {
+    margin-right: 10px;
+}
+
+.form-check-label {
+    font-size: 0.95rem;
+    color: #555;
+}
+
+.submit-btn {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Add space between form fields */
+.mb-3 {
+    margin-bottom: 20px;
+}
+
+.forgot-password-link {
+    color: #808080;
+    text-decoration: none;
+    transition: color 0.3s ease, text-decoration 0.3s ease;
+}
+
+.forgot-password-link:hover {
+    color: #b01e24;
+    text-decoration: underline;
+}

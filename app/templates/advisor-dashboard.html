@@ -1,0 +1,211 @@
+{% extends "base.html" %}
+
+{% block title %}Advisor Dashboard{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='/css/advisor-dash.css') }}">
+{% endblock %}
+
+{% block content %}
+        
+    <h1>Appointments</h1>
+
+    <div class="container">
+        <h2>Week of <span id="week-display">{{ start_of_week }} - {{ end_of_week }}</span></h2>
+        
+        <div class="btn-go"> 
+            <input type="date" id="week-selector">
+            <button onclick="goToWeek()">Go</button>
+        </div>
+        <div class="week-nav">
+            <button onclick="changeWeek(-1)">Previous Week</button>
+            <button onclick="changeWeek(1)">Next Week</button>
+            
+            
+        </div>
+    
+        <!-- Appointments Table -->
+        <table>
+            <tr>
+                <th>Date</th>
+                <th>Student Name</th>
+                <th>Time</th>
+                <th>Notes</th>
+                <th>Action</th>
+            </tr>
+            {% for appointment in appointments %}
+            <tr>
+                <td>{{ appointment.date }}</td>
+                <td>{{ appointment.student.first_name }} {{ appointment.student.last_name }}</td>
+                <td>{{ appointment.start_time.strftime('%I:%M %p') }} - {{ appointment.end_time.strftime('%I:%M %p') }}</td>
+                <td>
+                    {% if appointment.notes %}
+                        {% for note in appointment.notes %}
+                            <strong>{{ note.user_type.capitalize() }}:</strong> {{ note.content }} <br>
+                        {% endfor %}
+                    {% else %}
+                        No notes available
+                    {% endif %}
+                </td>
+                <td>
+                    <!-- Button to open appointment details -->
+                    <button onclick="openModal('{{ appointment.appointment_id }}', '{{ appointment.student.first_name }} {{ appointment.student.last_name }}', '{{ appointment.date }}', '{{ appointment.start_time.strftime('%I:%M %p') }} - {{ appointment.end_time.strftime('%I:%M %p') }}')">View Details</button>
+                </td>
+            </tr>
+
+            <!-- Popup Modal -->
+            <div id="appointmentModal" class="modal">
+                <div class="modal-content">
+                    <span class="close" onclick="closeModal()">&times;</span>
+                    <h2>Appointment Details</h2>
+                    <p><strong>Student Name:</strong> <span id="modal-student-name"></span></p>
+                    <p><strong>Date:</strong> <span id="modal-date"></span></p>
+                    <p><strong>Time:</strong> <span id="modal-time"></span></p>
+                    <p><strong>Notes:</strong> <span>{{ appointment.aggregated_notes }}</span></p>
+        
+                    <!-- Advisor Notes -->
+                    <h3>Add Notes</h3>
+                    <div class="modal-forms">
+                        <form method="POST" action="{{ url_for('add_note') }}">
+                            <input type="hidden" name="appointment_id" id="modal-appointment-id">
+                            <textarea name="note_content" placeholder="Enter your notes here:" required></textarea><br>
+                            <button class="note-btn"type="submit">Save Note</button>
+                        </form>
+                    
+                        <form action="{{ url_for('cancel_appointment', appointment_id=appointment.appointment_id) }}" method="POST" style="margin-top: 10px;">
+                            <input type="hidden" name="appointment_id" value="{{ appointment.appointment_id }}">
+                            <button class="cancel-btn" type="submit" onclick="return confirm('Are you sure you want to cancel this appointment?');">Cancel Appointment</button>
+                        </form>
+                    </div>
+                    
+                    
+                </div>
+            </div>
+            {% endfor %}
+        </table>
+    </div>
+
+
+    <h3>Current Availability</h3>
+    <table>
+        <tr>
+            <th>Date</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th>Action</th>
+        </tr>
+        {% for avail in availabilities %}
+        <tr>
+            <td>{{ avail.date }}</td>
+            <td>{{ avail.start_time.strftime('%I:%M %p') }}</td> <!-- Format to AM/PM -->
+            <td>{{ avail.end_time.strftime('%I:%M %p') }}</td>   <!-- Format to AM/PM -->
+            <td>
+                <form class="btn-form" method="POST" action="{{ url_for('delete_availability', availability_id=avail.availability_id) }}" >
+                    <button class="dele-avail" type="submit" onclick="return confirm('Are you sure you want to delete this availability?');">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="3">No available slots this week.</td>
+        </tr>
+        {% endfor %}
+
+    </table>
+    
+        
+    <!-- Availability Section -->
+    <h2>Set Availability</h2>
+    <form method="POST" action="{{ url_for('set_availability') }}">
+        <label for="date">Date:</label>
+        <input type="date" id="date" name="date" required><br><br>
+
+        <label for="start_time">Start Time:</label>
+        <select id="start_time" name="start_time" required>
+        {% for hour in range(7, 20) %}  {# 7 to 19 (7PM) inclusive #}
+            {% for minute in [0, 15, 30, 45] %}
+            {% set value = "%02d:%02d" % (hour, minute) %}
+            {% set display_hour = (hour % 12) if (hour % 12) != 0 else 12 %}
+            {% set am_pm = "AM" if hour < 12 else "PM" %}
+            {% set display = "%02d:%02d %s" % (display_hour, minute, am_pm) %}
+            <option value="{{ value }}">{{ display }}</option>
+            {% endfor %}
+        {% endfor %}
+        </select><br><br>
+
+        <label for="end_time">End Time:</label>
+        <select id="end_time" name="end_time" required>
+        {% for hour in range(7, 20) %}
+            {% for minute in [0, 15, 30, 45] %}
+            {% set value = "%02d:%02d" % (hour, minute) %}
+            {% set display_hour = (hour % 12) if (hour % 12) != 0 else 12 %}
+            {% set am_pm = "AM" if hour < 12 else "PM" %}
+            {% set display = "%02d:%02d %s" % (display_hour, minute, am_pm) %}
+            <option value="{{ value }}">{{ display }}</option>
+            {% endfor %}
+        {% endfor %}
+        </select><br><br>
+
+
+
+        <button class="submit-btn" type="submit">Set Availability</button>
+    </form>
+    
+{% endblock %}
+
+{% block scripts %}
+
+    <script> 
+                
+        // Function to open the modal and fill details
+        function openModal(appointmentId, studentName, date, time, notes) {
+            document.getElementById("modal-appointment-id").value = appointmentId;
+            document.getElementById("modal-student-name").innerText = studentName;
+            document.getElementById("modal-date").innerText = date;
+            document.getElementById("modal-time").innerText = time;
+            //document.getElementById("modal-notes").innerText = notes;
+            
+            document.getElementById("appointmentModal").style.display = "block";
+        }
+
+        // Function to close the modal
+        function closeModal() {
+            document.getElementById("appointmentModal").style.display = "none";
+        }
+
+        // Change week navigation
+        function changeWeek(direction) {
+            let currentWeekStart = new Date("{{ start_of_week }}");
+            currentWeekStart.setDate(currentWeekStart.getDate() + (direction * 7));
+
+            let formattedDate = currentWeekStart.toISOString().split("T")[0];
+            window.location.href = `/advisor_dashboard?week=${formattedDate}`;
+        }
+
+        function goToWeek() {
+            let selectedDate = document.getElementById("week-selector").value;
+            if (selectedDate) {
+                window.location.href = `/advisor_dashboard?week=${selectedDate}`;
+            }
+        }
+
+        // Function to change the week using next/previous buttons
+        function changeWeek(direction) {
+            let currentWeekStart = new Date("{{ start_of_week }}");
+            currentWeekStart.setDate(currentWeekStart.getDate() + (direction * 7));
+
+            let formattedDate = currentWeekStart.toISOString().split("T")[0];
+            window.location.href = `/advisor_dashboard?week=${formattedDate}`;
+        }
+
+        // Function to jump to a selected week
+        function goToWeek() {
+            let selectedDate = document.getElementById("week-selector").value;
+            if (selectedDate) {
+                window.location.href = `/advisor_dashboard?week=${selectedDate}`;
+            }
+        }
+
+    </script>
+    
+{% endblock %}

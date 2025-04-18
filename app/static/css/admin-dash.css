@@ -1,0 +1,168 @@
+.container {
+    width: 80%;
+    margin: auto;
+    padding: 20px;
+}
+
+
+
+.search-heading {
+    color: #555;
+    font-size: 1.2em;
+    margin-bottom: 0.5em;
+}
+
+.search-form {
+    padding: 10px;
+    border-radius: 8px;
+    display: block;
+    align-items: center;
+    max-width: 400px;
+    align-items: stretch;
+}
+
+.search-form input[type="text"] {
+    flex: 1;
+    background-color: #EFEFEF;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    font-size: 1em;
+    outline: none;
+}
+
+.search-btn {
+    background-color: #B01E24;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 0 0px 0px 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.search-btn:hover {
+    background-color: #991a1f;
+}
+
+.search-icon {
+    width: 16px;
+    height: 16px;
+    fill: white;
+}
+
+
+.search-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.search-header form {
+    display: flex;
+}
+
+/* Table Styles */
+table {
+    width: 80%;
+    margin: 20px auto;
+    border-collapse: collapse;
+    background: white;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 50px;
+}
+
+th, td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+    width: 10%
+}
+
+th {
+    background-color: #B01E24;
+    color: white;
+    width: 25%
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+tr:hover {
+    background-color: #f1f1f1;
+}
+
+h3 {
+    text-align: center;
+    color: #555;
+    line-height: 1.5;
+}
+
+/* Container for the entire form section */
+.form-section {
+    margin: 40px 0px 60px 0px;
+    border: 1px solid #ccc;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.submit-btn {
+    display: block;
+    margin-left: auto;
+    margin-right: auto
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+
+.header h2 {
+    margin: 0;
+}
+
+.plus-sign {
+    margin-left: 10px;
+}
+
+.form-content {
+    display: none; /* Initially hidden */
+    padding-top: 20px;
+    text-align: left;
+}
+
+button {
+    background-color: #B01E24;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-top: 10px;
+}
+
+/* Show the form content when the section is expanded */
+.form-section.expanded .form-content {
+    display: block;
+}
+
+/* Hide the fields until user selects a user type */
+.dynamicFields {
+    display: none;
+}
+
+/* Optional: Style the select box */
+select {
+    width: 100%;
+    padding: 8px;
+    border-radius: 4px;
+}
+
