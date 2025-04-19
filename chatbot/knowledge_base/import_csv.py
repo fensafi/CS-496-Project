@@ -27,7 +27,9 @@ prereqs_df = pd.read_csv("prerequisites.csv")
 # Upload courses data
 for _, row in courses_df.iterrows():
     cur.execute(
-        "INSERT INTO courses (course_code, course_name, credits, description) VALUES (%s, %s, %s, %s) ON CONFLICT (course_code) DO NOTHING",
+        "INSERT INTO courses (course_code, course_name, credits, description) "
+        "SELECT %s, %s, %s, %s "
+        "WHERE NOT EXISTS (SELECT 1 FROM courses WHERE course_code = %s)",
         (row['course_code'], row['course_name'], row['credits'], row['description'])
     )
 
