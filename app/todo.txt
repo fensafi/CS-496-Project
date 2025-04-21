@@ -1,9 +1,8 @@
-- Email Notifications 
-- Forgot Password 
-    > Fix styling 
-
+- Email Notifications : test
+- session back button issue
 - Different language option 
-- Cant use back button to login again after being logged out 
+
+
 - Fix admin search bar styling 
 - Set availability more easily 
 - Fix "delete appointment" redirect 
@@ -19,7 +18,8 @@ Completed:
 - Delete availabilities 
 - Note details for advisors
 - Change Password 
-
+- Forgot Password 
+    > Fix styling 
 
 
 

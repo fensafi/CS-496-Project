@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Home{% endblock %}
+{% block title %}{{ gettext('Home') }}{% endblock %}
 
 {% block stylesheets %}
     <!-- Specific stylesheet for this page -->
@@ -13,7 +13,7 @@
 
     <div class="branding" id="branding">
         <img class="logo" src="https://apply-wku-edu.cdn.technolutions.net/images/wku-logo-no-cupola.svg" alt="WKU Logo">
-        <h1 class="title">Advising Center</h1>
+        <h1 class="title">{{ gettext('Advising Portal') }}</h1>
         
     </div>
 
@@ -21,18 +21,18 @@
         <div class="modal-content">
             <form action="{{ url_for('login') }}" method="post">
                 <div class="mb-3">
-                    <label for="email" class="form-label">Topper Email</label>
+                    <label for="email" class="form-label">{{ gettext('Topper Email') }}</label>
                     <input type="email" class="form-control" id="email" name="email" required>
                 </div>
                 <div class="mb-3">
-                    <label for="password" class="form-label">Password</label>
+                    <label for="password" class="form-label">{{ gettext('Password') }}</label>
                     <input type="password" class="form-control" id="password" name="password" required>
                     <small class="form-text">
-                        <a href="{{ url_for('forgot_password') }}" class="forgot-password-link">Forgot Password?</a>
+                        <a href="{{ url_for('forgot_password') }}" class="forgot-password-link">{{ gettext('Forgot Password?') }}</a>
                     </small>
                 </div>
                 <div class="btn-wrapper">
-                    <button class="submit-btn" type="submit">Login</button>
+                    <button class="submit-btn" type="submit">{{ gettext('Login') }}</button>
                 </div>
         </div>
     </div>
@@ -40,7 +40,7 @@
     
 </div>
 
-<a class="login-btn" id="login-btn" href="#">Login</a>
+<a class="login-btn" id="login-btn" href="#">{{ gettext('Login') }}</a>
 
 {% endblock %}
 

@@ -1,8 +1,8 @@
-"""Added Notes table
+"""Initial migration from new models
 
-Revision ID: f3f2fce94962
+Revision ID: 7c09a0608258
 Revises: 
-Create Date: 2025-04-02 19:45:06.366021
+Create Date: 2025-04-21 11:14:51.028217
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'f3f2fce94962'
+revision = '7c09a0608258'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -63,8 +63,8 @@ def upgrade():
     sa.Column('date', sa.Date(), nullable=False),
     sa.Column('start_time', sa.Time(), nullable=False),
     sa.Column('end_time', sa.Time(), nullable=False),
-    sa.ForeignKeyConstraint(['advisor_id'], ['advisors.advisor_id'], ),
-    sa.PrimaryKeyConstraint('availability_id', 'advisor_id')
+    sa.ForeignKeyConstraint(['advisor_id'], ['advisors.advisor_id'], ondelete='CASCADE'),
+    sa.PrimaryKeyConstraint('availability_id')
     )
     op.create_table('notes',
     sa.Column('note_id', sa.Integer(), autoincrement=True, nullable=False),
