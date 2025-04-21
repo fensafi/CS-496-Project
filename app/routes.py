@@ -29,6 +29,20 @@ def init_routes(app):
         user = Student.query.get(user_id) or Advisor.query.get(user_id) or Administration.query.get(user_id)
         return user
 
+    def find_user(email):
+        student = Student.query.filter_by(email=email).first()
+        if student:
+            return student
+
+        advisor = Advisor.query.filter_by(email=email).first()
+        if advisor:
+            return advisor
+
+        admin = Administration.query.filter_by(email=email).first()
+        if admin:
+            return admin
+
+        return None
 
     
     ''' Home & Login'''
@@ -106,25 +120,13 @@ def init_routes(app):
         if request.method == 'POST':
             email = request.form['email']
             
-            # Check if the email exists in any of the tables (Students, Advisors, Administration)
-            student = Student.query.filter_by(email=email).first()
-            advisor = Advisor.query.filter_by(email=email).first()
-            admin = Administration.query.filter_by(email=email).first()
+            user = find_user(email)
 
-            # If no user is found, flash an error message
-            if not student and not advisor and not admin:
-                flash('No account associated with this email address.', 'danger')
+            if not user:
+                flash('Email not found in our records.', 'danger')
                 return redirect(url_for('forgot_password'))
 
-            user = None
-            if student:
-                user = student
-            elif advisor:
-                user = advisor
-            elif admin:
-                user = admin
             # Here, you would send the reset email (same logic as before)
-            # For simplicity, let's assume sending the reset email is done by a function
             s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
             token = s.dumps(user.email, salt='password-reset-salt')
             reset_url = url_for('reset_password', token=token, _external=True)
@@ -140,12 +142,18 @@ def init_routes(app):
 
         return render_template('forgot-password.html')
 
-
     @app.route('/reset_password/<token>', methods=['GET', 'POST'])
     def reset_password(token):
-        user = User.verify_reset_token(token)
-        if not user:
+        try:
+            s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+            email = s.loads(token, salt='password-reset-salt', max_age=3600)
+        except:
             flash('Invalid or expired token', 'danger')
+            return redirect(url_for('forgot_password'))
+
+        user = find_user(email)
+        if not user:
+            flash('No user associated with this token.', 'danger')
             return redirect(url_for('forgot_password'))
 
         if request.method == 'POST':
@@ -160,7 +168,8 @@ def init_routes(app):
             flash('Your password has been updated.', 'success')
             return redirect(url_for('login'))
 
-        return render_template('reset-password.html')
+        return render_template('reset-password.html', token=token)
+
 
 
 

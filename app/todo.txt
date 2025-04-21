@@ -1,6 +1,6 @@
 - Email Notifications 
-- Forgot Password 
-    > Fix styling 
+
+- Fix Forgot Pass styling 
 
 - Different language option 
 - Cant use back button to login again after being logged out 
@@ -18,8 +18,8 @@ Completed:
 - Center "delete" buttons on admin page
 - Delete availabilities 
 - Note details for advisors
-- Change Password 
-
+- Change Password gig
+- Forgot Password 
 
 
 
