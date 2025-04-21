@@ -1,4 +1,4 @@
-from flask import render_template, request, redirect, url_for, flash, session
+from flask import render_template, request, redirect, url_for, flash, session, Blueprint
 from .models import Student, Advisor, Administration, Appointment, Availability, Note
 from . import db
 from .models import Availability
@@ -13,10 +13,13 @@ from app.email import send_appointment_confirmation
 from flask_mail import Mail, Message
 from app import mail
 from itsdangerous import URLSafeTimedSerializer
+from flask_babel import _
 
 
 
 
+
+main = Blueprint('main', __name__)
 login_manager = LoginManager()
 
 def init_routes(app):
@@ -43,9 +46,12 @@ def init_routes(app):
             return admin
 
         return None
-
+    @app.route('/')
+    def index():
+        return render_template('home.html', title=_("Home"))
     
     ''' Home & Login'''
+
 
     @app.route('/')
     @app.route('/home')
@@ -175,6 +181,7 @@ def init_routes(app):
 
     ''' Student Dashboard'''
 
+
     @app.route('/student_dashboard')
     @login_required  # Ensure user is logged in
     def student_dashboard():
@@ -256,7 +263,6 @@ def init_routes(app):
 
         return jsonify(events)
 
-    # Route to handle appointment creation via fetch() POST request
     # Creates appointment from student only 
     @app.route('/api/appointments', methods=['POST'])
     @login_required
@@ -308,7 +314,13 @@ def init_routes(app):
         db.session.add(appointment)
         db.session.commit()
 
-
+        # Send confirmation email to student and advisor
+        msg = Message(
+            'Appointment Confirmation',
+            recipients=[current_user.email, advisor.email],
+            body=f'An appointment has been scheduled for {appointment_date}'
+        )
+        mail.send(msg)
 
         # Now, delete the availability for that time slot (assuming it's already in the Availability model)
         availability = Availability.query.filter_by(advisor_id=advisor.advisor_id, date=appointment_date, 
@@ -348,55 +360,6 @@ def init_routes(app):
 
         return jsonify(events)
 
-    '''
-    @app.route('/api/note', methods=['POST'])
-    @login_required
-    def api_create_note():
-        data = request.get_json()
-
-        advisor_name = data.get("advisor_name")
-        student_email = data.get("student_email")
-        date_str = data.get("date")
-        time_str = data.get("time")
-
-        if not all([advisor_name, student_email, date_str, time_str]):
-            return jsonify({"error": "Missing required fields"}), 400
-
-        # Get advisor ID based on name
-        try:
-            first, last = advisor_name.strip().split(" ", 1)
-            advisor = Advisor.query.filter_by(first_name=first, last_name=last).first()
-        except ValueError:
-            return jsonify({"error": "Invalid advisor name format"}), 400
-
-        if not advisor:
-            return jsonify({"error": "Advisor not found"}), 404
-
-        try:
-            # Parse date and time
-            date_obj = datetime.strptime(date_str, '%Y-%m-%d').date()
-            time_parts = time_str.split(' - ')
-            start_time_obj = datetime.strptime(time_parts[0], '%I:%M %p').time()
-            end_time_obj = datetime.strptime(time_parts[1], '%I:%M %p').time()
-        except Exception as e:
-            return jsonify({"error": f"Invalid date/time format: {str(e)}"}), 400
-
-        # Create new appointment
-        new_appointment = Appointment(
-            student_id=current_user.student_id,
-            advisor_id=advisor.advisor_id,
-            date=date_obj,
-            start_time=start_time_obj,
-            end_time=end_time_obj,
-            status='pending'
-        )
-
-        db.session.add(new_appointment)
-        db.session.commit()
-
-        return jsonify({"message": "Appointment created successfully"}), 201
-    '''
-
     @app.route('/scheduled-appointments')
     @login_required
     def scheduled_appointments():
@@ -416,6 +379,7 @@ def init_routes(app):
 
 
     ''' Advisor Dashboard'''
+
 
     @app.route('/advisor_dashboard')
     def advisor_dashboard():
@@ -582,7 +546,9 @@ def init_routes(app):
         return redirect(url_for('advisor_dashboard'))
 
 
+
     ''' Admin Dashboard'''
+
 
     @app.route('/admin_dashboard', methods=['GET', 'POST'])
     @login_required

@@ -1,16 +1,20 @@
-from flask import Flask
+from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
 from .config import Config
-from flask import Flask
 from flask_mail import Mail, Message
+from flask_babel import Babel, _
+
+
 
 
 db = SQLAlchemy()
 migrate = Migrate()
 login_manager = LoginManager()
 mail = Mail()
+babel = Babel()
+
 
 def create_app():
     app = Flask(__name__)
@@ -18,32 +22,50 @@ def create_app():
     app.config['SECRET_KEY'] = 'your-secret-key-here'
     app.config.from_object(Config)
 
+    # Email configs
     app.config['MAIL_SERVER'] = 'smtp.gmail.com'
     app.config['MAIL_PORT'] = 587
     app.config['MAIL_USE_TLS'] = True
     app.config['MAIL_USERNAME'] = app.config['MAIL_USERNAME']
     app.config['MAIL_PASSWORD'] = app.config['MAIL_PASSWORD']
     app.config['MAIL_DEFAULT_SENDER'] = app.config['MAIL_USERNAME']
+    app.config['BABEL_TRANSLATION_DIRECTORIES'] = r'C:\Users\Devon\Desktop\CS496\CS-496-Project\app\translations'
+    # Babel configs
+    app.config['BABEL_DEFAULT_LOCALE'] = 'en'
+    app.config['BABEL_SUPPORTED_LOCALES'] = ['en', 'es']
+    
 
-
-    db.init_app(app)  # Initialize the db with the app
+    # Initializations
+    db.init_app(app)
     migrate.init_app(app, db)
     login_manager.init_app(app)
     mail.init_app(app)
 
+    # Clean up availabilities
     with app.app_context():
-        from . import models  # Import models inside app context to avoid circular import
+        from . import models
         from .routes import init_routes
         init_routes(app)
         
-        # Clean up expired availabilities after the app is fully initialized
         clean_up_availabilities()
+
+    # Bable initilization
+    babel.init_app(app, locale_selector=get_locale)
+
+    @app.context_processor
+    def inject_translations():
+        return dict(_=_)
+
+
+    # Blueprint routes
+    from .routes import main as main_blueprint
+    app.register_blueprint(main_blueprint)
 
     return app
 
 def clean_up_availabilities():
-    """Deletes expired availabilities."""
-    from .models import Availability, Appointment  # Import Availability here to avoid circular import
+    # Imports here to avoid circular import
+    from .models import Availability, Appointment 
     from datetime import datetime
 
     now = datetime.now()
@@ -58,3 +80,8 @@ def clean_up_availabilities():
         db.session.delete(app)
     db.session.commit()
     print(f"Cleaned up {len(expired_availabilities)} expired availabilities and {len(expired_appointments)}.")
+
+# Babel thing
+def get_locale():
+    print("Selected Language: ", request.accept_languages.best_match(["en", "es"]))
+    return request.accept_languages.best_match(["en", "es"])
