@@ -10,7 +10,7 @@ def send_async_email(app, msg):
 def send_appointment_confirmation(student_email, appointment_data):
 
     msg = Message(
-        "Your Appointment Confirmation"
+        "Your Appointment Confirmation",
         recipients=[student_email]
     )
 

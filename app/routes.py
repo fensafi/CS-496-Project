@@ -16,9 +16,6 @@ from app.email import send_appointment_confirmation
 
 
 
-
-
-
 login_manager = LoginManager()
 
 def init_routes(app):
@@ -363,9 +360,9 @@ def init_routes(app):
             db.session.add(appointment)
             db.session.commit()
             send_appointment_confirmation(
-                student_email=data['student_email']
+                student_email=data['student_email'],
                 appointment_data={
-                    'advisor_name': data['advisor_name']
+                    'advisor_name': data['advisor_name'],
                     'appointment_time': data['appointment_time']
                 }
             )
@@ -476,6 +473,14 @@ def init_routes(app):
         db.session.commit()
 
         return jsonify({"message": "Appointment canceled successfully by advisor!"})
+    
+    @app.route('/chatbot')
+    def chatbot():
+        return render_template('chatbot.html')
+    
+  
+
+    
 
 
     

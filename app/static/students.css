@@ -1,3 +1,6 @@
+/* Import Google Fonts - Inter*/
+@import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&display=swap');
+
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -174,44 +177,7 @@ main {
 }
 
 
-.footer-container {
-    background-color: rgba(249, 4, 4, 0.714); 
-    width: 100%;
-    height: auto;
-    display: flex;
-    justify-content: space-between; 
-    align-items: center;
-    position: fixed; /* Fix the footer to the bottom */
-    bottom: 0; /* Position it at the bottom of the viewport */
-    left: 0;
-    padding: 10px 20px; /* Add some padding to make it more comfortable */
-    z-index: 999; /* Ensure it's above other elements */
-}
 
-.footer-left, .footer-right {
-    color: rgb(3, 3, 3);
-    font-size: 16px;
-    opacity: 0.8;
-    font-family: 'Times New Roman', Times, serif;
-}
 
-.footer-left p, .footer-right p {
-    margin: 5px 0;
-}
 
-.footer-right {
-    display: flex;
-    justify-content: flex-end;
-    gap: 100px;
-    margin-right: 150px;
-}
-
-.nav-link-footer-right {
-    text-decoration: none; 
-    color: rgb(3, 3, 3);  
-}
-
-.nav-link-footer-right:hover {
-    color: rgba(225, 216, 216, 0.8);
-}
 
