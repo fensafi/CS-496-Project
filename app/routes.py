@@ -16,6 +16,7 @@ from app.email import send_appointment_confirmation
 
 
 
+
 login_manager = LoginManager()
 
 def init_routes(app):
@@ -477,6 +478,9 @@ def init_routes(app):
     @app.route('/chatbot')
     def chatbot():
         return render_template('chatbot.html')
+    
+
+    
     
   
 
