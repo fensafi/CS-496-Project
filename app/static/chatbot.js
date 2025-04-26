@@ -20,16 +20,66 @@ const createMessageElement = (content, ...classes) => {
     return div;
 }
 
-const generateBotResponse = () => {
-
+// Send message to backend API and process response
+const generateBotResponse = async (userMessage) => {
+    try {
+        const response = await fetch('/api/chatbot', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ message: userMessage }),
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.error || 'Server error');
+        }
+        
+        // Find the thinking message and replace it with the actual response
+        const thinkingMessage = document.querySelector(".bot-message.thinking");
+        if (thinkingMessage) {
+            const responseText = document.createElement("div");
+            responseText.className = "message-text";
+            
+            // Format the response - replace newlines with <br> tags
+            responseText.innerHTML = data.response.replace(/\n/g, '<br>');
+            
+            // Replace the thinking indicator with the actual response
+            thinkingMessage.classList.remove("thinking");
+            thinkingMessage.querySelector(".message-text").replaceWith(responseText);
+        }
+        
+        // Scroll to the bottom of chat
+        chatBody.scrollTop = chatBody.scrollHeight;
+        
+    } catch (error) {
+        console.error('Error:', error);
+        
+        // Show error message
+        const thinkingMessage = document.querySelector(".bot-message.thinking");
+        if (thinkingMessage) {
+            const responseText = document.createElement("div");
+            responseText.className = "message-text";
+            responseText.textContent = "Sorry, I encountered an error. Please try again.";
+            
+            thinkingMessage.classList.remove("thinking");
+            thinkingMessage.querySelector(".message-text").replaceWith(responseText);
+        }
+    }
 }
 
-// Handle outgoing user messages 
+/// Handle outgoing user messages 
 const handleOutGoingMessage = (e) => {
     e.preventDefault();
-    messageInput.dispatchEvent(new Event ("input"));
+    messageInput.dispatchEvent(new Event("input"));
 
     userData.message = messageInput.value.trim();
+    
+    // Don't process empty messages
+    if (!userData.message) return;
+    
     messageInput.value = "";
     // Create and display user message 
     const messageContent = `<div class="message-text"></div>`;
@@ -37,6 +87,9 @@ const handleOutGoingMessage = (e) => {
     const outgoingMessageDiv = createMessageElement(messageContent, "user-message");
     outgoingMessageDiv.querySelector(".message-text").textContent = userData.message;
     chatBody.appendChild(outgoingMessageDiv);
+    
+    // Scroll to the bottom of chat after adding user message
+    chatBody.scrollTop = chatBody.scrollHeight;
 
     // Simulate bot response with thinking indicator after a delay
     setTimeout(() => {
@@ -61,9 +114,15 @@ const handleOutGoingMessage = (e) => {
 
         const incomingMessageDiv = createMessageElement(messageContent, "bot-message", "thinking");
         chatBody.appendChild(incomingMessageDiv);
-        generateBotResponse();
+        
+        // Scroll to the bottom of chat after adding the thinking indicator
+        chatBody.scrollTop = chatBody.scrollHeight;
+        
+        // Send the message to the backend and process the response
+        generateBotResponse(userData.message);
     }, 600);
 }
+
 
 // Handle enter key press for sending message
 messageInput.addEventListener("keydown", (e) => {
