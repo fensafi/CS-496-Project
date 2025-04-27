@@ -1,1 +1,2 @@
-from .chatbot import get_response, add_response
+from .chatbot import CourseRecommendationChatbot
+

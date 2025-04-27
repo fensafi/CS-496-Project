@@ -1,6 +1,8 @@
 import pandas as pd
 import re
 from collections import defaultdict
+import os
+from collections import defaultdict
 
 class CourseRecommendationChatbot:
     def __init__(self, courses_file, prerequisites_file, faq_file):
@@ -18,8 +20,14 @@ class CourseRecommendationChatbot:
     def load_data(self):
         """Load data from CSV files."""
         try:
+            # Get the absolute paths to the CSV files based on current script location
+            base_dir = os.path.dirname(__file__)
+            courses_path = os.path.join(base_dir, '../chatbot/courses.csv')  # relative path to chatbot directory
+            prerequisites_path = os.path.join(base_dir, '../chatbot/prerequisites.csv')
+            faq_path = os.path.join(base_dir, '../chatbot/faq.csv')
+            
             # Load courses data
-            courses_df = pd.read_csv(self.courses_file)
+            courses_df = pd.read_csv(courses_path)
             for _, row in courses_df.iterrows():
                 self.course_data[row['course_code']] = {
                     "name": row['course_name'],
@@ -28,7 +36,7 @@ class CourseRecommendationChatbot:
                 }
             
             # Load prerequisites data
-            prereq_df = pd.read_csv(self.prerequisites_file)
+            prereq_df = pd.read_csv(prerequisites_path)
             for _, row in prereq_df.iterrows():
                 course = row['course_code']
                 prereq = row['prerequisite_code']
@@ -40,7 +48,7 @@ class CourseRecommendationChatbot:
                 self.required_for[prereq].append(course)
             
             # Load FAQ data
-            faq_df = pd.read_csv(self.faq_file)
+            faq_df = pd.read_csv(faq_path)
             for _, row in faq_df.iterrows():
                 self.faq_data[row['question'].lower()] = row['answer']
             
@@ -252,7 +260,5 @@ def main():
         print(f"\nChatbot: {response}")
 
 
-
-
 if __name__ == "__main__":
-    main()
+    chatbot = CourseRecommendationChatbot(courses_file=None, prerequisites_file=None, faq_file=None)

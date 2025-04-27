@@ -13,6 +13,8 @@ from fastapi import FastAPI, Depends, Request
 from fastapi.responses import JSONResponse
 from flask import Blueprint, session, jsonify
 from app.email import send_appointment_confirmation
+from chatbot import CourseRecommendationChatbot
+
 
 
 
@@ -478,7 +480,32 @@ def init_routes(app):
     @app.route('/chatbot')
     def chatbot():
         return render_template('chatbot.html')
-    
+
+    @app.route('/api/chatbot', methods=['POST'])
+    def process_chatbot_message():
+        try:
+            # Step 1: Get the user message from the request
+            data = request.get_json()
+            if not data or 'message' not in data:
+                return jsonify({'error': 'No message provided'}), 400
+
+            user_message = data['message']
+            
+            # Step 2: Initialize the CourseRecommendationChatbot instance
+            # Make sure to provide the correct file paths for the CSV data
+            chatbot = CourseRecommendationChatbot('courses.csv', 'prerequisites.csv', 'faq.csv')
+            
+            # Step 3: Use the chatbot's process_input method to generate a response
+            response = chatbot.process_input(user_message)  # This is where your chatbot logic processes the input
+
+            # Step 4: Return the response
+            return jsonify({'response': response})
+
+        except Exception as e:
+            print(f"Error in chatbot processing: {str(e)}")
+            return jsonify({'error': 'An error occurred processing your message'}), 500
+
+        
 
     
     

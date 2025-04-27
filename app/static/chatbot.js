@@ -70,7 +70,7 @@ const generateBotResponse = async (userMessage) => {
     }
 }
 
-/// Handle outgoing user messages 
+// Handle outgoing user messages 
 const handleOutGoingMessage = (e) => {
     e.preventDefault();
     messageInput.dispatchEvent(new Event("input"));
@@ -115,8 +115,8 @@ const handleOutGoingMessage = (e) => {
         const incomingMessageDiv = createMessageElement(messageContent, "bot-message", "thinking");
         chatBody.appendChild(incomingMessageDiv);
         
-        // Scroll to the bottom of chat after adding the thinking indicator
-        chatBody.scrollTop = chatBody.scrollHeight;
+        // Scroll after DOM updates
+       chatBody.scrollTo({top: chatBody.scrollHeight, behavior: "smooth"});
         
         // Send the message to the backend and process the response
         generateBotResponse(userData.message);
