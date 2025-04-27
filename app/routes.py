@@ -156,6 +156,7 @@ def init_routes(app):
             email = request.form['email']
             
             user = find_user(email)
+            user = find_user(email)
 
             if not user:
                 flash('No user found with that email address.', 'danger')
@@ -189,6 +190,11 @@ def init_routes(app):
 
         if not user:
             flash('Invalid or expired token', 'danger')
+            return redirect(url_for('forgot_password'))
+
+        user = find_user(email)
+        if not user:
+            flash('No user associated with this token.', 'danger')
             return redirect(url_for('forgot_password'))
 
         if request.method == 'POST':
