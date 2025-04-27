@@ -13,11 +13,11 @@ with app.app_context():
 
     # Create new student
     student = Student(
-        first_name="Test",
-        last_name="Student",
+        first_name="T",
+        last_name="Stu",
         student_id=student_id,  # Assuming student_id is stored as a string
-        email="test@example.com",
-        password=generate_password_hash("password123")
+        email="t@example.com",
+        password=generate_password_hash("pass")
     )
 
     # Add student to database

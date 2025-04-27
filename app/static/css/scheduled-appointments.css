@@ -11,10 +11,10 @@
 }
 
 .scheduled_appointments {
-    width: 600px;/* Ensure it doesn't collapse */
+    width: 600px;
     max-height: 400px; 
-    min-height: 300px;/* Scrolls when too many appointments */
-    overflow-y: auto; /* Enables scrolling */
+    min-height: 300px;
+    overflow-y: auto;
     background-color: #b6afaf;
     display: flex;
     flex-direction: column;
@@ -53,7 +53,7 @@ li {
     cursor: pointer;
     border-radius: 5px;
     transition: background-color 0.3s ease;
-    margin-left: auto; /* Pushes button to the right */
+    margin-left: auto;
     margin-top: 20px;
     position: relative;
     margin-left: 650px;
@@ -63,7 +63,7 @@ li {
 
 /* Hover effect */
 #cancel:hover {
-    background-color: rgba(164, 107, 107, 0.8); /* Darker blue color on hover */
+    background-color: rgba(164, 107, 107, 0.8);
 }
 
 /* Ensure the page layout keeps the footer at the bottom */
@@ -74,10 +74,10 @@ body {
 }
 
 main {
-    flex: 1; /* Allows content to grow while keeping footer at bottom */
+    flex: 1;
     display: flex;
     flex-direction: column;
-    justify-content: center; /* Centers content when empty */
+    justify-content: center;
     align-items: center;
 }
 

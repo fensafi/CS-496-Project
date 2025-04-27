@@ -4,12 +4,11 @@
 {% block title %}Login{% endblock %}
 
 {% block stylesheets %}
-    <!-- Specific stylesheet for this page -->
     <link rel="stylesheet" href="{{ url_for('static', filename='/css/login.css') }}">
 {% endblock %}
 
 {% block content %}
-    <form action="{{ url_for('login') }}" method="post">
+    <form class="login-form" action="{{ url_for('login') }}" method="post">
         <div class="mb-3">
             <label for="email" class="form-label">Topper Email</label>
             <input type="email" class="form-control" id="email" name="email" required>
@@ -27,5 +26,5 @@
 {% endblock %}
 
 {% block scripts %}
-    <!-- Specific script for this page -->
+
 {% endblock %}

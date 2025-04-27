@@ -1,5 +1,5 @@
 /* Style the form container */
-form {
+.login-form {
     width: 450px;
     padding: 20px;
     background-color: rgba(255, 255, 255, 0.402); 

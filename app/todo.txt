@@ -1,18 +1,12 @@
-- Email Notifications : test
-- session back button issue
-- Different language option 
-
-
-- Fix admin search bar styling 
-- Set availability more easily 
-- Fix "delete appointment" redirect 
-- Think about restyling nav bar a little
-
-
-
-
+- fix box shadow on change password
+- Fix admin search bar styling
+- Change color of buttons on advisor calendar 
+- Fix alignment on advisor submit availabilities buttons 
+- Fix color on manage availabilities buttons 
+- clear student page after submitting
 
 Completed: 
+- deleting advisor from admin page 
 - Center login button 
 - Center "delete" buttons on admin page
 - Delete availabilities 
@@ -20,6 +14,13 @@ Completed:
 - Change Password 
 - Forgot Password 
     > Fix styling 
+- session back button issue
+- Email Notifications : test
+- Fix "delete appointment" redirect
+- Set availability more easily
+- Fix messages popping up on reset password page 
+- Different language option 
+- account for white space when searching on admin page
 
 
 

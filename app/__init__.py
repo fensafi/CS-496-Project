@@ -1,11 +1,11 @@
-from flask import Flask, request
+from flask import Flask, request, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
 from .config import Config
 from flask_mail import Mail, Message
 from flask_babel import Babel, _
-
+import os
 
 
 
@@ -29,8 +29,11 @@ def create_app():
     app.config['MAIL_USERNAME'] = app.config['MAIL_USERNAME']
     app.config['MAIL_PASSWORD'] = app.config['MAIL_PASSWORD']
     app.config['MAIL_DEFAULT_SENDER'] = app.config['MAIL_USERNAME']
-    app.config['BABEL_TRANSLATION_DIRECTORIES'] = r'C:\Users\Devon\Desktop\CS496\CS-496-Project\app\translations'
+
+
     # Babel configs
+    basedir = os.path.abspath(os.path.dirname(__file__))
+    app.config['BABEL_TRANSLATION_DIRECTORIES'] = os.path.join(basedir, 'translations')
     app.config['BABEL_DEFAULT_LOCALE'] = 'en'
     app.config['BABEL_SUPPORTED_LOCALES'] = ['en', 'es']
     
@@ -83,5 +86,4 @@ def clean_up_availabilities():
 
 # Babel thing
 def get_locale():
-    print("Selected Language: ", request.accept_languages.best_match(["en", "es"]))
-    return request.accept_languages.best_match(["en", "es"])
+    return session.get('lang', 'en')

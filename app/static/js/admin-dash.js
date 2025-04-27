@@ -1,18 +1,18 @@
-function toggleMenu() {
+/*function toggleMenu() {
     const menuBtn = document.getElementById('menu-btn');
     const sideMenu = document.getElementById('sideMenu');
 
-    // Toggle the "show" class to open/close the menu
+    // Toggle "show" to open/close the menu
     sideMenu.classList.toggle("show");
 
-    // Close the menu when clicking outside
+    // Close menu when clicking outside
     document.addEventListener('click', function(event) {
         // Check if the click was outside the menu or menu button
         if (!sideMenu.contains(event.target) && !menuBtn.contains(event.target)) {
             sideMenu.classList.remove('show');  // Close the menu by removing 'show' class
         }
     });
-}
+}*/
 
 function toggleForm() {
     var formSection = document.getElementById('createUserSection');

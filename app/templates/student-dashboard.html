@@ -3,7 +3,6 @@
 {% block title %}Student Dashboard{% endblock %}
 
 {% block stylesheets %}
-    <!-- Specific stylesheet for this page -->
     <link rel="stylesheet" href="{{ url_for('static', filename='/css/student-dash.css') }}">
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.css" rel="stylesheet">
 {% endblock %}
@@ -15,7 +14,7 @@
         <div class="list-group" id="advisor-container">
             <div id="advisor-title">
             </div>
-            <!-- Advisors will be populated here -->
+            <!-- Advisors here -->
 
         </div>
         
@@ -26,7 +25,7 @@
                 <h2>Select a Time</h2>
             </a>
             <div id="time-slot-list">
-                <!-- Time slots will be populated here dynamically -->
+                <!-- Time slots  here -->
             </div>
             <p id="selected-date">Selected Date: </p> 
             <input type="hidden" id="selected-time" name="selected-time">
@@ -49,7 +48,6 @@
 {% endblock %}
 
 {% block scripts %}
-    <!-- Specific script for this page -->
      <script src="{{ url_for('static', filename='/js/student-dash.js') }}"></script>
      <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
      <script>

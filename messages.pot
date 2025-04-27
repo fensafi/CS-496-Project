@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-04-21 15:08-0500\n"
+"POT-Creation-Date: 2025-04-23 22:20-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,138 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: app/routes.py:37 app/templates/home.html:3
+#: app/templates/admin-dashboard.html:3 app/templates/admin-dashboard.html:14
+msgid "Admin Dashboard"
+msgstr ""
+
+#: app/templates/admin-dashboard.html:19 app/templates/admin-dashboard.html:65
+msgid "Create User"
+msgstr ""
+
+#: app/templates/admin-dashboard.html:29
+msgid "User Type:"
+msgstr ""
+
+#: app/templates/admin-dashboard.html:31
+msgid "Select User Type"
+msgstr ""
+
+#: app/templates/admin-dashboard.html:32
+msgid "Student"
+msgstr ""
+
+#: app/templates/admin-dashboard.html:33
+msgid "Advisor"
+msgstr ""
+
+#: app/templates/admin-dashboard.html:34
+msgid "Admin"
+msgstr ""
+
+#: app/templates/admin-dashboard.html:38
+msgid "Student ID:"
+msgstr ""
+
+#: app/templates/admin-dashboard.html:43
+msgid "Advisor ID:"
+msgstr ""
+
+#: app/templates/admin-dashboard.html:46
+msgid "Office:"
+msgstr ""
+
+#: app/templates/admin-dashboard.html:53
+msgid "First Name:"
+msgstr ""
+
+#: app/templates/admin-dashboard.html:56
+msgid "Last Name:"
+msgstr ""
+
+#: app/templates/admin-dashboard.html:59
+msgid "Email:"
+msgstr ""
+
+#: app/templates/admin-dashboard.html:62
+msgid "Password:"
+msgstr ""
+
+#: app/templates/admin-dashboard.html:74
+msgid "Users"
+msgstr ""
+
+#: app/templates/admin-dashboard.html:78
+msgid "Search by Name or ID"
+msgstr ""
+
+#: app/templates/admin-dashboard.html:100
+msgid "Search Results for"
+msgstr ""
+
+#: app/templates/admin-dashboard.html:103
+msgid "Students"
+msgstr ""
+
+#: app/templates/admin-dashboard.html:105
+#: app/templates/admin-dashboard.html:122
+#: app/templates/admin-dashboard.html:139
+msgid "ID"
+msgstr ""
+
+#: app/templates/admin-dashboard.html:105
+#: app/templates/admin-dashboard.html:122
+#: app/templates/admin-dashboard.html:139
+msgid "Name"
+msgstr ""
+
+#: app/templates/admin-dashboard.html:105
+#: app/templates/admin-dashboard.html:122
+#: app/templates/admin-dashboard.html:139
+msgid "Email"
+msgstr ""
+
+#: app/templates/admin-dashboard.html:105
+#: app/templates/admin-dashboard.html:122
+#: app/templates/admin-dashboard.html:139
+msgid "Action"
+msgstr ""
+
+#: app/templates/admin-dashboard.html:113
+#: app/templates/admin-dashboard.html:130
+#: app/templates/admin-dashboard.html:147
+msgid "Delete"
+msgstr ""
+
+#: app/templates/admin-dashboard.html:120
+msgid "Advisors"
+msgstr ""
+
+#: app/templates/base.html:6
+msgid "WKU CS Advising Center"
+msgstr ""
+
+#: app/templates/base.html:28
+msgid "More Info"
+msgstr ""
+
+#: app/templates/base.html:39
+msgid "Change Password"
+msgstr ""
+
+#: app/templates/base.html:42
+msgid "Scheduled Appointments"
+msgstr ""
+
+#: app/templates/base.html:45
+msgid "Logout"
+msgstr ""
+
+#: app/templates/base.html:48 app/templates/home.html:35
+#: app/templates/home.html:43
+msgid "Login"
+msgstr ""
+
+#: app/templates/home.html:3
 msgid "Home"
 msgstr ""
 
@@ -35,10 +166,6 @@ msgstr ""
 
 #: app/templates/home.html:31
 msgid "Forgot Password?"
-msgstr ""
-
-#: app/templates/home.html:35 app/templates/home.html:43
-msgid "Login"
 msgstr ""
 
 #: venv/Lib/site-packages/click/_termui_impl.py:556

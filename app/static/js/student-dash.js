@@ -101,7 +101,9 @@ function populateAdvisorList(advisors) {
 }
 
 function onAdvisorClick(advisorElement, advisorId) {
-    console.log("Advisor clicked:", advisorId); // Debugging line
+
+    console.log("Advisor clicked:", advisorId);
+
     document.querySelectorAll('.list-group-item').forEach(item =>
         item.classList.remove('selected-advisor')
     );
@@ -140,15 +142,15 @@ function fetchAvailabilityDates(advisorId) {
         .then(response => response.json())
         .then(datesResponse => {
             console.log("Received availability dates:", datesResponse);
-            updateCalendar(datesResponse); // Pass the full response here
-            updateTimeSlots([]); // Reset time slots, you can update this later as per your logic
+            updateCalendar(datesResponse);
+            updateTimeSlots([]);
         })
         .catch(error => console.error('Error fetching availability dates:', error));
 }
 
 function updateTimeSlots(slots) {
     const timeSlotList = document.getElementById('time-slot-list');
-    timeSlotList.innerHTML = ''; // Clear the previous slots
+    timeSlotList.innerHTML = '';
 
     if (slots && slots.length > 0) {
         slots.forEach(slot => {
@@ -194,7 +196,7 @@ function updateCalendar(datesResponse) {
 
 function generateTimeSlots(selectedDate) {
     const date = new Date(selectedDate);
-    const isoDate = date.toISOString().split('T')[0];  // This gives 'YYYY-MM-DD'
+    const isoDate = date.toISOString().split('T')[0];
     
     fetch(`/api/availability/times/${encodeURIComponent(selectedDate)}`)
     .then(response => {

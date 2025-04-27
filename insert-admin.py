@@ -10,8 +10,8 @@ with app.app_context():
     # Create new admin
     admin = Administration(
         name="Test Admin",
-        email="admin@example.com",
-        password=generate_password_hash("adminpassword123")  # Hash the password
+        email="ad@example.com",
+        password=generate_password_hash("pass")  # Hash the password
     )
 
     # Add admin to database

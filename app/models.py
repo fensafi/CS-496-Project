@@ -63,21 +63,21 @@ class Appointment(db.Model):
     __tablename__ = 'appointments'
     appointment_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     student_id = db.Column(db.BigInteger, db.ForeignKey('students.student_id'), nullable=False)
-    advisor_id = db.Column(db.BigInteger, db.ForeignKey('advisors.advisor_id'), nullable=False)
+    advisor_id = db.Column(db.BigInteger, db.ForeignKey('advisors.advisor_id', ondelete='CASCADE'), nullable=False)
     date = db.Column(db.Date, nullable=False)
     start_time = db.Column(db.Time, nullable=False)
     end_time = db.Column(db.Time, nullable=False)
     status = db.Column(db.String(20), default='pending')
     
     student = db.relationship('Student', backref='appointments', lazy=True)
-    advisor = db.relationship('Advisor', backref='appointments', lazy=True)
+    advisor = db.relationship('Advisor',  backref=db.backref('appointments', passive_deletes=True), lazy=True)
     notes = db.relationship('Note', backref='appointment', lazy=True, cascade="all, delete-orphan")
 
 
 class Note(db.Model):
     __tablename__ = 'notes'
     note_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    appointment_id = db.Column(db.Integer, db.ForeignKey('appointments.appointment_id'), nullable=False)
+    appointment_id = db.Column(db.BigInteger, db.ForeignKey('appointments.appointment_id', ondelete='CASCADE'), nullable=False)
     user_id = db.Column(db.BigInteger, nullable=False)  # ID of the user (either student or advisor)
     user_type = db.Column(db.String(10), nullable=False)  # 'student' or 'advisor'
     content = db.Column(db.Text, nullable=False)

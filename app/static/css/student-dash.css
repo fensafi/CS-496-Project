@@ -9,7 +9,7 @@
 
 .container {
     display: flex;
-    justify-content: space-between; /* Distributes the space evenly between children */
+    justify-content: space-between;
     align-items: flex-start;
     padding: 0;
 
@@ -21,7 +21,7 @@
     height: 300px;
     display: flex;
     flex-direction: column;
-    overflow-y: auto; /* Allows scrolling if advisors exceed height */
+    overflow-y: auto;
     background-color: #ffff;
     align-items: flex-end;
     align-items: flex-start;
@@ -41,7 +41,7 @@
 }
 
 .advisor_name:not(:last-child) {
-    border-bottom: 1px solid #ddd; /* Adds a line between each advisor */
+    border-bottom: 1px solid #ddd;
 }
 
 
@@ -74,41 +74,40 @@
 }
 /* Basic styling for the time slots */
 .time-slot {
-    background-color: #f9f9f9; /* Light background */
+    background-color: #f9f9f9;
     padding: 10px;
     margin: 5px 0;
     border-radius: 5px;
-    transition: background-color 0.3s ease; /* Smooth transition */
+    transition: background-color 0.3s ease;
 }
 
 /* Styling the time slot when hovered */
 .time-slot:hover {
-    background-color: #d3d3d3; /* Darker background on hover */
+    background-color: #d3d3d3;
 }
 
 /* Keep the darker background after clicking */
 .time-slot.selected {
-    background-color: #b0b0b0; /* Keep the dark background when selected */
+    background-color: #b0b0b0;
 }
 
-/* Optional: Styling the label and radio button */
+/* Label and radio button */
 .time-slot label {
     display: flex;
     align-items: center;
     font-size: 16px;
     color: #333;
-    cursor: pointer; /* Change the cursor to indicate clickability */
+    cursor: pointer;
 }
 
-/* Optional: Change the color of the radio button label when hovered */
 .time-slot:hover label {
-    color: #000; /* Make the label text darker on hover */
+    color: #000;
 }
 
 
 
 .available-event {
-    background-color: #b01e24; /* Change text color */
+    background-color: #b01e24;
     font-weight: bold; 
     border: none;
     
@@ -125,7 +124,7 @@
 }
 
 .student-note {
-    width: 60%; /* Adjust width as needed */
+    width: 60%;
     padding: 8px;
     height: 160px;
     border: 1px solid #ccc;
@@ -154,7 +153,7 @@
   }
   
 
-/* Toolbar background (optional) */
+
 .fc-toolbar {
     color: #222;
     border-radius: 6px;
@@ -181,6 +180,6 @@
   
   /* Today's cell highlight */
   .fc-day-today {
-    background-color: #ffe8e9 !important; /* light version of your red */
+    background-color: #ffe8e9 !important;
   }
   

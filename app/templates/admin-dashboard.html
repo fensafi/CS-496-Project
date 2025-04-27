@@ -1,22 +1,20 @@
 {% extends "base.html" %}
 
-{% block title %}Admin Dashboard{% endblock %}
+{% block title %}{{ gettext('Admin Dashboard')}}{% endblock %}
 
 {% block stylesheets %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='/css/admin-dash.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin-dash.css') }}">
 {% endblock %}
 
 {% block content %}
 
-
-    
     <div class="container">
-        <h1>Admin Dashboard</h1>
+        <h1>{{ gettext('Admin Dashboard')}}</h1>
 
         <!-- Create User Form -->
         <div class="form-section" id="createUserSection">
             <div class="header" onclick="toggleForm()">
-                <h2>Create User</h2>
+                <h2>{{ gettext('Create User')}}</h2>
                 <div class="plus-sign">
                     <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 20 20">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-7 7V5"/>
@@ -26,44 +24,43 @@
             
             <div class="form-content">
                 <form method="POST" action="{{ url_for('create_user') }}">
-                    <label for="user_type">User Type:</label>
+                    <label for="user_type">{{ gettext('User Type:')}}</label>
                     <select name="user_type" id="user_type" required onchange="showFields()">
-                        <option value="" disabled selected>Select User Type</option>
-                        <option value="student">Student</option>
-                        <option value="advisor">Advisor</option>
-                        <option value="admin">Admin</option>
+                        <option value="" disabled selected>{{ gettext('Select User Type')}}</option>
+                        <option value="student">{{ gettext('Student')}}</option>
+                        <option value="advisor">{{ gettext('Advisor')}}</option>
+                        <option value="admin">{{ gettext('Admin')}}</option>
                     </select><br><br>
 
                     <div id="studentFields" class="dynamicFields" style="display: none;">
-                        <label>Student ID:</label>
+                        <label>{{ gettext('Student ID:')}}</label>
                         <input type="number" name="student_id"><br>
                     </div>
 
                     <div id="advisorFields" class="dynamicFields" style="display: none;">
-                        <label>Advisor ID:</label>
+                        <label>{{ gettext('Advisor ID:')}}</label>
                         <input type="number" name="advisor_id"><br>
 
-                        <label>Office:</label>
+                        <label>{{ gettext('Office:')}}</label>
                         <input type="text" name="office"><br>
                     </div>
 
                     <div id="adminFields" class="dynamicFields" style="display: none;">
-                        <!-- Admin specific fields can go here -->
                     </div>
 
-                    <label>First Name:</label>
+                    <label>{{ gettext('First Name:')}}</label>
                     <input type="text" name="first_name" required><br>
 
-                    <label>Last Name:</label>
+                    <label>{{ gettext('Last Name:')}}</label>
                     <input type="text" name="last_name" required><br>
 
-                    <label>Email:</label>
+                    <label>{{ gettext('Email:')}}</label>
                     <input type="email" name="email" required><br>
 
-                    <label>Password:</label>
+                    <label>{{ gettext('Password:')}}</label>
                     <input type="password" name="password" required><br>
 
-                    <button  class="submit-btn" type="submit">Create User</button>
+                    <button  class="submit-btn" type="submit">{{ gettext('Create User')}}</button>
                 </form>
             </div>
         </div>
@@ -72,13 +69,13 @@
         <!-- Displays users and search form. MAYBE ADD BACK BUTTON OR SOMETHING? -->
         <div class= "search-header">
             <!-- Users List -->
-            <h2>Users</h2>
+            <h2>{{ gettext('Users')}}</h2>
 
             <!-- Search Form -->
             <form class="search-form" action="{{ url_for('search_users') }}" method="get">
-                <input type="text" name="query" placeholder="Search by Name or ID" required>
+                <input type="text" name="query" placeholder="{{ _('Search by Name or ID') }}" required>
+
                 <button type="submit" class="search-btn">
-                    <!-- Inline SVG Icon -->
                     <svg class="search-icon" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 512 512">
                         <path fill="currentColor"
@@ -97,12 +94,12 @@
         </div>
 
         {% if query %}
-            <h3>Search Results for "{{ query }}"</h3>
+            <h3>{{ gettext('Search Results for')}} "{{ query }}"</h3>
         {% endif %}
 
-        <h3>Students</h3>
+        <h3>{{ gettext('Students')}}</h3>
         <table>
-            <tr><th>ID</th><th>Name</th><th>Email</th><th>Action</th></tr>
+            <tr><th>{{ gettext('ID')}}</th><th>{{ gettext('Name')}}</th><th>{{ gettext('Email')}}</th><th>{{ gettext('Action')}}</th></tr>
             {% for student in students %}
             <tr>
                 <td>{{ student.student_id }}</td>
@@ -110,16 +107,16 @@
                 <td>{{ student.email }}</td>
                 <td>
                     <form method="POST" action="{{ url_for('delete_user', user_type='student', user_id=student.student_id) }}">
-                        <button class="submit-btn" type="submit">Delete</button>
+                        <button class="submit-btn" type="submit">{{ gettext('Delete')}}</button>
                     </form>
                 </td>
             </tr>
             {% endfor %}
         </table>
 
-        <h3>Advisors</h3>
+        <h3>{{ gettext('Advisors')}}</h3>
         <table>
-            <tr><th>ID</th><th>Name</th><th>Email</th><th>Action</th></tr>
+            <tr><th>{{ gettext('ID')}}</th><th>{{ gettext('Name')}}</th><th>{{ gettext('Email')}}</th><th>{{ gettext('Action')}}</th></tr>
             {% for advisor in advisors %}
             <tr>
                 <td>{{ advisor.advisor_id }}</td>
@@ -127,7 +124,7 @@
                 <td>{{ advisor.email }}</td>
                 <td>
                     <form method="POST" action="{{ url_for('delete_user', user_type='advisor', user_id=advisor.advisor_id) }}">
-                        <button class="submit-btn" type="submit">Delete</button>
+                        <button class="submit-btn" type="submit">{{ gettext('Delete')}}</button>
                     </form>
                 </td>
             </tr>
@@ -136,7 +133,7 @@
 
         <h3>Admins</h3>
         <table>
-            <tr><th>ID</th><th>Name</th><th>Email</th><th>Action</th></tr>
+            <tr><th>{{ gettext('ID')}}</th><th>{{ gettext('Name')}}</th><th>{{ gettext('Email')}}</th><th>{{ gettext('Action')}}</th></tr>
             {% for admin in admins %}
             <tr>
                 <td>{{ admin.admin_id }}</td>
@@ -144,7 +141,7 @@
                 <td>{{ admin.email }}</td>
                 <td>
                     <form method="POST" action="{{ url_for('delete_user', user_type='admin', user_id=admin.admin_id) }}">
-                        <button class="submit-btn" type="submit">Delete</button>
+                        <button class="submit-btn" type="submit">{{ gettext('Delete')}}</button>
                     </form>
                 </td>
             </tr>
@@ -152,9 +149,10 @@
         </table>
 
     </div>
-    {% endblock %}
+    
+{% endblock %}
 
-    {% block scripts %}
-        <!-- Connects js/admin.js file so functions ( like toggleMenu() ) in there will work when called in this file-->
-        <script src="{{ url_for('static', filename='js/admin-dash.js') }}"></script>
-    {% endblock %}
+{% block scripts %}
+    <!-- Connects js/admin.js file so functions ( like toggleMenu() ) in there will work when called in this file-->
+    <script src="{{ url_for('static', filename='js/admin-dash.js') }}"></script>
+{% endblock %}
