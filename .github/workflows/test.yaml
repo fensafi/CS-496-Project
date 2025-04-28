@@ -7,31 +7,26 @@ on:
     branches: [ temp ]
 
 jobs:
-  build-test-deploy:
+  test:
     runs-on: ubuntu-latest
     defaults:
-    
+      run:
+        working-directory: ./chatbot
+
     steps:
-    - name: Checkout Code
-      uses: actions/setup-python@v4
+    - uses: actions/checkout@v2
+    
+    - name: Set up Python
+      uses: actions/setup-python@v2
       with:
         python-version: '3.9'
-      
-    - name: Install system dependencies
+    
+    - name: Install dependencies
       run: |
-        sudo apt-get update
-        sudo apt-get install -y python3-dev python3-pip
-      
-    - name: Install python dependencies
+        python -m pip install --upgrade pip
+        pip install pytest pandas
+    
+    - name: Run tests
       run: |
-        pip install -r requirements.txt
-        python -m nltk.downloader punkt wordnet averaged_perceptron_tagger
-        
-    - name: Download NLTK data
-      run: |
-        python -c "import nltk; nltk.download('punkt'); nltk.download('wordnet')"
-
-    - name: Run Flask tests
-      run: |
-        pytest tests/
+        pytest test_chatbot.py -v
         
