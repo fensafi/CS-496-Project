@@ -36,7 +36,7 @@ def create_app():
     app.config['BABEL_TRANSLATION_DIRECTORIES'] = os.path.join(basedir, 'translations')
     app.config['BABEL_DEFAULT_LOCALE'] = 'en'
     app.config['BABEL_SUPPORTED_LOCALES'] = ['en', 'es']
-    
+
 
     # Initializations
     db.init_app(app)
@@ -50,7 +50,10 @@ def create_app():
         from .routes import init_routes
         init_routes(app)
         
-        clean_up_availabilities()
+        try:
+            clean_up_availabilities()
+        except Exception as e:
+            print(f"Warning: Failed to clean up availabilities: {e}")
 
     # Bable initilization
     babel.init_app(app, locale_selector=get_locale)
@@ -87,3 +90,5 @@ def clean_up_availabilities():
 # Babel thing
 def get_locale():
     return session.get('lang', 'en')
+
+

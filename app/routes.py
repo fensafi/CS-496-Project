@@ -17,6 +17,7 @@ from flask_babel import _
 from functools import wraps
 from flask import make_response
 from sqlalchemy import text
+from chatbot import CourseRecommendationChatbot
 
 
 
@@ -97,6 +98,7 @@ def init_routes(app):
             user = Student.query.filter_by(email=email).first()
             if user and user.check_password(password):
                 login_user(user)
+                app.logger.debug(f"User {user.email} logged in successfully.")
                 session['user_type'] = 'student'
                 session['user_id'] = user.student_id  # Store student ID in session
                 return redirect(url_for('student_dashboard'))
@@ -105,6 +107,7 @@ def init_routes(app):
             user = Advisor.query.filter_by(email=email).first()
             if user and user.check_password(password):
                 login_user(user)
+                app.logger.debug(f"User {user.email} logged in successfully.")
                 session['user_type'] = 'advisor'
                 session['user_id'] = user.advisor_id  # Store advisor ID in session
                 return redirect(url_for('advisor_dashboard'))
@@ -113,6 +116,7 @@ def init_routes(app):
             user = Administration.query.filter_by(email=email).first()
             if user and user.check_password(password):
                 login_user(user)
+                app.logger.debug(f"User {user.email} logged in successfully.")
                 session['user_type'] = 'admin'
                 return redirect(url_for('admin_dashboard'))
 
@@ -903,4 +907,29 @@ def init_routes(app):
                 ).all()
 
         return render_template('admin-dashboard.html', students=students, advisors=advisors, admins=admins, query=query)
+    
+    @app.route('/api/chatbot', methods=['POST'])
+    def process_chatbot_message():
+        try:
+            # Step 1: Get the user message from the request
+            data = request.get_json()
+            if not data or 'message' not in data:
+                return jsonify({'error': 'No message provided'}), 400
+
+            user_message = data['message']
+            
+            # Step 2: Initialize the CourseRecommendationChatbot instance
+            # Make sure to provide the correct file paths for the CSV data
+            chatbot = CourseRecommendationChatbot('courses.csv', 'prerequisites.csv', 'faq.csv')
+            
+            # Step 3: Use the chatbot's process_input method to generate a response
+            response = chatbot.process_input(user_message)  # This is where your chatbot logic processes the input
+
+            # Step 4: Return the response
+            return jsonify({'response': response})
+
+        except Exception as e:
+            print(f"Error in chatbot processing: {str(e)}")
+            return jsonify({'error': 'An error occurred processing your message'}), 500
+
 
