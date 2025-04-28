@@ -1,0 +1,20 @@
+name: Test
+
+on:
+  push:
+    branches: [ temp ]
+  pull_request:
+    branches: [ temp ]
+
+jobs:
+  build-test-deploy:
+    runs-on: ubuntu-latest
+    defaults:
+    
+    steps:
+    - name: Checkout Code
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+        
