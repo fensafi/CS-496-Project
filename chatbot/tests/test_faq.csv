@@ -1,2 +1,4 @@
-question,answer
-How do I drop a class?,"You can drop a class with the registration section of TopNet."
+id,question,answer
+1,How do I schedule an appointment?,"You can schedule an appointment by selecting your advisor, a date on the calendar, and then selecting a time."
+2,How do I drop a class?,"You can drop a class with the registration section of TopNet."
+3,What are the prerequisites for CS290?,"You must complete CS 180 with a minimum grade of C."

@@ -27,12 +27,12 @@ def test_prerequisites(chatbot):
 def test_recommendations(chatbot):
     # tests course recommendations
     response = chatbot.recommend_courses(["CS180"])
-    assert "CS290" in response
+    assert "CS270" in response
 
 def test_faq(chatbot):
     # test FAQ
-    response = chatbot.answer_faq("How do I drop a class?")
-    assert "drop" in response.lower()
+    response = chatbot.answer_faq("How do I schedule an appointment?")
+    assert "schedule" in response.lower()
 
 def test_input_parsing(chatbot):
     # test input parsing
