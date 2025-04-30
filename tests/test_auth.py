@@ -2,7 +2,7 @@ import pytest
 from unittest.mock import patch, MagicMock
 from flask import Flask, session, url_for
 from werkzeug.security import generate_password_hash
-from . import db
+from app import db
 from app.models import Student, Advisor, Administration
 from app.routes import init_routes
 
