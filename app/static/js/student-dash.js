@@ -258,7 +258,7 @@ function updateCalendarWithCounts(dateCounts) {
     });
 }
 
-
+// Start of chatbot.js
 const messageInput = document.querySelector(".message-input");
 const chatBody = document.querySelector(".chat-body");
 const sendMessageButton = document.querySelector("#send-message");

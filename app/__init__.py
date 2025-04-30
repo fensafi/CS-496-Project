@@ -3,9 +3,13 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
 from .config import Config
-from flask_mail import Mail, Message
+from flask_mail import Mail
 from flask_babel import Babel, _
 import os
+from sqlalchemy import inspect
+
+
+
 
 
 
@@ -71,21 +75,27 @@ def create_app():
 
 def clean_up_availabilities():
     # Imports here to avoid circular import
-    from .models import Availability, Appointment 
+    from .models import Availability, Appointment
     from datetime import datetime
 
-    now = datetime.now()
-    expired_availabilities = Availability.query.filter(Availability.date < now).all()
-    expired_appointments = Appointment.query.filter(Appointment.date < now).all()
-    
-    for avail in expired_availabilities:
-        db.session.delete(avail)
-    db.session.commit()
+    inspector = inspect(db.engine)
+    if 'availabilities' in inspector.get_table_names() and 'appointments' in inspector.get_table_names():
+        now = datetime.now()
 
-    for app in expired_appointments:
-        db.session.delete(app)
-    db.session.commit()
-    print(f"Cleaned up {len(expired_availabilities)} expired availabilities and {len(expired_appointments)}.")
+        expired_availabilities = Availability.query.filter(Availability.date < now).all()
+        expired_appointments = Appointment.query.filter(Appointment.date < now).all()
+
+        for avail in expired_availabilities:
+            db.session.delete(avail)
+        db.session.commit()
+
+        for app in expired_appointments:
+            db.session.delete(app)
+        db.session.commit()
+
+        print(f"Cleaned up {len(expired_availabilities)} expired availabilities and {len(expired_appointments)}.")
+    else:
+        print("Tables not yet created; skipping cleanup.")
 
 # Babel thing
 def get_locale():

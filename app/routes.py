@@ -219,7 +219,7 @@ def init_routes(app):
 
     ''' Student Dashboard'''
 
-
+    # The route to students dashboard 
     @app.route('/student_dashboard')
     @nocache
     @login_required 
@@ -259,6 +259,7 @@ def init_routes(app):
             })
         else:
             return jsonify({'error': 'Advisor not found'}), 404
+        
 
 
     # Route for fetching availability dates for a specific advisor
@@ -508,6 +509,7 @@ def init_routes(app):
                                     end_of_week=end_of_week.date())
 
         return redirect(url_for('login'))
+    
 
     # Sets active view (calendar or list) in the session
     @app.route('/set_view/<view>', methods=['GET'])
@@ -515,6 +517,7 @@ def init_routes(app):
         # Store the selected view in the session
         session['active_view'] = view
         return redirect(url_for('advisor_dashboard'))
+    
 
     # Sets single availability slot (15 minutes) 
     @app.route("/set_availability", methods=["POST"])
@@ -617,6 +620,7 @@ def init_routes(app):
             flash(f"Error adding availability: {str(e)}", "danger")
 
         return redirect(url_for('advisor_dashboard'))
+    
 
     # Deletes single availability slot 
     @app.route('/delete_availability/<int:availability_id>', methods=['POST'])
@@ -713,6 +717,8 @@ def init_routes(app):
 
         flash("Note added successfully!", "success")
         return redirect(url_for('advisor_dashboard'))
+    
+    
 
     # Gets all appointments and availabilities for calendar
     @app.route('/get_weekly_summary', methods=['GET'])
