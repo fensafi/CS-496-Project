@@ -7,39 +7,6 @@ from app import db, create_app
 from app.models import Student, Advisor, Administration
 from app.routes import init_routes
 
-# Fixture to create a test Flask app
-@pytest.fixture(scope='module')
-def app():
-    app = create_app()
-    app.config.update({
-        'TESTING': True,
-        'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:',  # Use in-memory DB for tests
-        'WTF_CSRF_ENABLED': False
-    })
-    
-    # Push application context and initialize DB
-    with app.app_context():
-        db.create_all()
-        yield app
-
-@pytest.fixture(scope='module')
-def client(app):
-    return app.test_client()
-
-@pytest.fixture(scope='module')
-def init_database(app):
-    # Add test data
-    with app.app_context():
-        student = Student(email="student@wku.edu", password="password123")
-        advisor = Advisor(email="advisor@wku.edu", password="password123")
-        admin = Administration(email="admin@wku.edu", password="password123")
-        
-        db.session.add(student)
-        db.session.add(advisor)
-        db.session.add(admin)
-        db.session.commit()
-    
-    yield  # Testing happens here
 
 def test_student_login_success(client, mocker):
     """Test successful student login"""
