@@ -183,7 +183,7 @@
     background-color: #ffe8e9 !important;
   }
 
-  /*start of chatbot*/
+  /*Begin chatbot CSS*/
 
 * {
     margin: 0;
@@ -192,10 +192,9 @@
     font-family: "Inter", sans-serif;
 }
 
-
 #chatbot-toggler {
     position: fixed;
-    bottom: 30px;
+    bottom: 90px;
     right: 35px;
     border: none;
     height: 50px;
@@ -231,9 +230,9 @@ body.show-chatbot #chatbot-toggler span:last-child {
 .chatbot-popup {
     position: fixed;
     right: 35px;
-    bottom: 90px;
+    bottom: 150px;
     width: 420px;
-    height: 80vh;
+    height: 70vh;
     background: #ffff;
     overflow: hidden;
     border-radius: 15px;
@@ -479,4 +478,3 @@ body.show-chatbot .chatbot-popup {
 .chat-form .chat-controls button:hover {
     background: #fff;
 }
-  

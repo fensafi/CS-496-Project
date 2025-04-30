@@ -1,3 +1,5 @@
+# This script is used to test the connection to the PostgreSQL database
+
 import psycopg2
 
 try:
