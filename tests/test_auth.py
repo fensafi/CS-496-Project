@@ -1,32 +1,29 @@
 import pytest
+import os
 from unittest.mock import patch, MagicMock
 from flask import Flask, session, url_for
 from werkzeug.security import generate_password_hash
-from app import db
+from app import db, create_app
 from app.models import Student, Advisor, Administration
 from app.routes import init_routes
 
 # fixture to create a test flask app
 @pytest.fixture
 def app():
-    app = Flask(__name__)
-    app.config['TESTING'] = True
-    app.config['SECRET_KEY'] = 'test-secret-key'
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
-    app.config['WTF_CSRF_ENABLED'] = False
-
-    init_routes(app)
-
+    app = create_app()
+    app.config.update({
+        "TESTING": True,
+        "SQLALCHEMY_DATABASE_URI": os.getenv("DATABASE_URL", "sqlite:///:memory:"),
+        "WTF_CSRF_ENABLED": False
+    })
     with app.app_context():
         db.create_all()
         yield app
         db.drop_all()
 
-# fixture for the client
 @pytest.fixture
 def client(app):
     return app.test_client()
-
 # test cases
 
 def test_student_login_success(client, mocker):
