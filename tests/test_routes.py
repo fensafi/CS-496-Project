@@ -5,9 +5,8 @@ import unittest
 from unittest.mock import patch, MagicMock
 import unittest
 from flask import Flask
-from app import create_app  # Make sure this is the correct path to your app factory
+from app import create_app  
 import unittest
-from app import create_app
 
 
 
