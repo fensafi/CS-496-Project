@@ -39,3 +39,8 @@ def test_input_parsing(chatbot):
     courses = chatbot.parse_courses_input("I've taken CS290 and CS180")
     assert "CS290" in courses
     assert "CS180" in courses
+
+def test_unknown_input(chatbot):
+    # testing for random input that will redirect the user to stay in topic
+    response = chatbot.answer_faq("So today i walked a mile")
+    assert "so" in response
